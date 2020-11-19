@@ -3,7 +3,7 @@
  * Plugin Name: Icons for Canuck CP
  * Plugin URI: https://software.gieffeedizioni.it
  * Description: Add shortcode and MCE menu for Canuck CP FontAwesome icons.
- * Version: 0.0.1
+ * Version: 0.0.2
  * License: GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Author: Gieffe edizioni srl
