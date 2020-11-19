@@ -16,6 +16,9 @@ if (!defined('ABSPATH')) {
 	die('-1');
 };
 
+// Add auto updater https://codepotent.com/classicpress/plugins/update-manager/
+require_once('UpdateClient.class.php');
+
 class IconsForCanuckCp{
 
 	public function __construct() {
