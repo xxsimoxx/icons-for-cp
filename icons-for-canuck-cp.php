@@ -23,6 +23,18 @@ class IconsForCanuckCp{
 
 	public function __construct() {
 
+		// Register custom post type to store icons.
+		add_action('init', [$this, 'register_cpt']);
+		// Remove rich editing and buttons
+		add_filter('user_can_richedit', [$this, 'remove_rich_editing']);
+		add_action('admin_head', [$this, 'remove_buttons']);
+		// Adjust title
+		add_filter('enter_title_here', [$this, 'title_placeholder'], 10, 2);
+
+		// Add icons from CPT to Canuck CP theme
+		add_filter ('canuckcp_icons', [$this, 'add_icons']);
+		add_filter ('canuckcp_icon_select', [$this, 'icon_select']);
+
 		// Alert if Canuck CP is not installed or activated
 		add_filter('plugin_row_meta', [$this, 'check_canuck'], 10, 2);
 
@@ -36,6 +48,80 @@ class IconsForCanuckCp{
 			add_action('admin_head-'.$hook, [$this, 'generate_menu_items']);
 		}
 
+	}
+
+	public function remove_rich_editing ($default) {
+		global $post;
+		if (isset($post->post_type) && $post->post_type === 'canuckcp-icons') {
+			return false;
+		}
+		return $default;
+	}
+
+	public function remove_buttons () {
+		global $current_screen;
+		if ($current_screen->post_type === 'canuckcp-icons') {
+			remove_action('media_buttons', 'media_buttons');
+		}
+	}
+
+	public function title_placeholder($placeholder, $post) {
+		if (get_post_type($post) === 'canuckcp-icons') {
+			$placeholder = 'icon-name';
+		}
+		return $placeholder;
+	}
+
+	public function register_cpt() {
+		$labels = [
+			'name'                => 'Icons',
+			'singular_name'       => 'Icon',
+			'add_new'             => 'New icon',
+			'add_new_item'        => 'Add new icon',
+			'edit_item'           => 'Edit icon',
+			'new_item'            => 'New icon',
+			'all_items'           => 'Icons',
+			'view_item'           => 'View icon',
+			'search_items'        => 'Search icons',
+			'not_found'           => 'No icons found',
+			'not_found_in_trash'  => 'No icons found in trash',
+			'menu_name'           => 'Icons',
+		];
+		$args = [
+			'public'        => false,
+			'show_ui'       => true,
+			'show_in_menu'  => 'themes.php',
+			'rewrite'       => false,
+			'supports'      => ['title', 'editor'],
+			'labels'        => $labels,
+		];
+		register_post_type('canuckcp-icons', $args);
+	}
+
+	public function add_icons($icons) {
+		$args = [
+			'post_type' => 'canuckcp-icons',
+			'public'    => 'true',
+		];
+		$posts = get_posts($args);
+		foreach ($posts as $post) {
+			$icon = $post->to_array();
+			$icons += [ $icon['post_name'] => $icon['post_content'] ];
+		}
+		return $icons;
+	}
+
+	public function icon_select($icons) {
+		$args = [
+			'post_type' => 'canuckcp-icons',
+			'public'    => 'true',
+		];
+		$posts = get_posts($args);
+		foreach ($posts as $post) {
+			$icon = $post->to_array();
+			$icons += [ $icon['post_name'] => $icon['post_name'] ];
+		}
+		return $icons;
 	}
 
 	public function check_canuck($links, $file) {
