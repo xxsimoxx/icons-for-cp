@@ -30,6 +30,9 @@ class IconsForCanuckCp{
 		add_action('admin_head', [$this, 'remove_buttons']);
 		// Adjust title
 		add_filter('enter_title_here', [$this, 'title_placeholder'], 10, 2);
+		// Do checks before saving content
+		add_action('admin_enqueue_scripts', [$this, 'postcheck'], 2000);
+		add_action('wp_ajax_ifcp_postcheck', [$this, 'check_callback']);
 
 		// Add icons from CPT to Canuck CP theme
 		add_filter ('canuckcp_icons', [$this, 'add_icons']);
@@ -96,6 +99,46 @@ class IconsForCanuckCp{
 			'labels'        => $labels,
 		];
 		register_post_type('canuckcp-icons', $args);
+	}
+
+	public function postcheck($hook) {
+		if (!in_array($hook, ['edit.php', 'post.php', 'post-new.php'])) {
+			return;
+		}
+		global $post;
+		$post_type = get_post_type();
+		if (!isset($post->post_type)) {
+			return;
+		}
+		if ($post_type !== 'canuckcp-icons') {
+			return;
+		}
+		wp_enqueue_script('ifcp_post_check', plugins_url('js/postchecks.js', __FILE__), ['jquery'], false, true);
+	}
+
+	function check_callback() {
+		function title_check() {
+			$title = $_REQUEST['post_title'];
+			if (!preg_match('/^[a-z\-]+$/', $title)) {
+				return [
+					'message' => 'Caution: only lowercase letters and dashes are allowed in the title.',
+					'status'  => 'error',
+				];
+			}
+			if (function_exists('canuckcp_icon_select') && in_array($title, canuckcp_icon_select())) {
+				return [
+					'message' => 'Caution: there is already an icon called '.$title.'.',
+					'status'  => 'error',
+				];
+			}
+			return [
+					'message' => 'Title is good as icon name.',
+					'status'  => 'updated',
+				];
+		}
+		$response = title_check();
+		echo wp_json_encode($response);
+		die();
 	}
 
 	public function add_icons($icons) {
