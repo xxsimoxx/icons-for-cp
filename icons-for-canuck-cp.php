@@ -134,13 +134,14 @@ class IconsForCanuckCp{
 			$title = $_REQUEST['post_title'];
 			if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
 				return [
-					'message' => __('Caution: only lowercase letters and dashes are allowed in the title.', 'icons-for-canuck-cp'),
+					'message' => __('Caution: only lowercase letters, dashes and digits dashes are allowed in the title.', 'icons-for-canuck-cp'),
 					'status'  => 'error',
 				];
 			}
 			if (function_exists('canuckcp_icon_select') && in_array($title, canuckcp_icon_select())) {
 				return [
-					'message' => __('Caution: there is already an icon called '.$title.'.', 'icons-for-canuck-cp'),
+					/* Translators: %s name of the icon */
+					'message' => sprintf(__('Caution: there is already an icon called %s.', 'icons-for-canuck-cp'), $title),
 					'status'  => 'notice notice-warning',
 				];
 			}
@@ -188,15 +189,17 @@ class IconsForCanuckCp{
 			return $links;
 		}
 		$url = 'https://kevinsspace.ca/canuck-cp-classicpress-theme';
+		/* Translators: %s is the link URL */
 		$message = '<span class="dashicons-before dashicons-warning">'.sprintf(wp_kses(__('<a href="%s">Canuck CP</a> theme is required!', 'icons-for-canuck-cp'), ['a' => [ 'href' => []]]), esc_url($url)).'</span>';
 		array_push($links, $message);
 		return $links;
 	}
 
 	public function process_shortcode($atts, $content = null) {
-		if (!function_exists('canuckcp_svgX')) {
+		if (!function_exists('canuckcp_svg')) {
 			if (current_user_can('manage_options')) {
 				$url = 'https://kevinsspace.ca/canuck-cp-classicpress-theme';
+				/* Translators: %s is the link URL */
 				$message = sprintf(wp_kses(__('[ICON PLACEHOLDER] <a href="%s">Canuck CP</a> is not installed (only admins can see this)!', 'icons-for-canuck-cp'), ['a' => [ 'href' => []]]), esc_url($url)).'</span>';
 				return $message;
 			}
