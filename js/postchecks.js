@@ -13,7 +13,7 @@ jQuery(document).ready(function($){
 		} ).done( function ( data ) {
 
 			$('#message').remove();
-			$('#poststuff').prepend('<div id=\"message\" class=\" fade ' + data.status + '\"><p>' + data.message + '</p></div>');
+			$('#poststuff').prepend('<div id="message" class="fade ' + data.status + '"><p>' + data.message + '</p></div>');
 
 		} );
 
