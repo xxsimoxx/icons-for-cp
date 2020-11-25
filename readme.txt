@@ -22,7 +22,8 @@ Add shortcode and MCE menu for Canuck CP FontAwesome icons.
 Add your own icons or any from FontAwesome to the theme.
 Just use the "Icons" menu in "Appearance" menu.
 
-*Note: if you uninstall the plugin your icons get lost.*
+Note: if you uninstall the plugin your icons get lost.
+To keep them add `define('KEEP_ICONS_FOR_CANUCK_CP', true);` to `wp-config.php`.
 
 
 ## Add shortcode and MCE menu for Canuck CP FontAwesome icons.

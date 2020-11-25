@@ -51,6 +51,9 @@ class IconsForCanuckCp{
 			add_action('admin_head-'.$hook, [$this, 'generate_menu_items']);
 		}
 
+		// Uninstall.
+		register_uninstall_hook(__FILE__, [__CLASS__, 'uninstall']);
+
 	}
 
 	public function remove_rich_editing ($default) {
@@ -236,6 +239,19 @@ class IconsForCanuckCp{
 			return false;
 		}
 		return true;
+	}
+
+	public static function uninstall() {
+		if (defined('\KEEP_ICONS_FOR_CANUCK_CP') && KEEP_ICONS_FOR_CANUCK_CP === true) {
+			return;
+		}
+		$allposts = get_posts([
+			'post_type'   => 'canuckcp-icons',
+			'post_status' => 'any',
+		]);
+		foreach ($allposts as $eachpost) {
+			wp_delete_post($eachpost->ID, true);
+		}
 	}
 
 }
