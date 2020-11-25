@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Icons for Canuck CP
  * Plugin URI: https://software.gieffeedizioni.it
- * Description: Add shortcode and MCE menu for Canuck CP FontAwesome icons.
- * Version: 0.0.2
+ * Description: Add new icons, shortcode and MCE menu for Canuck CP FontAwesome icons.
+ * Version: 0.0.3
  * License: GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Author: Gieffe edizioni srl
@@ -39,10 +39,10 @@ class IconsForCanuckCp{
 	}
 
 	public function check_canuck($links, $file) {
-		if (basename($file) !== basename(__FILE__)) {
+		if (function_exists('canuckcp_svg')) {
 			return $links;
 		}
-		if (function_exists('canuckcp_svg')) {
+		if (basename($file) !== basename(__FILE__)) {
 			return $links;
 		}
 		array_push($links, '<span class="dashicons-before dashicons-warning"><a href="https://kevinsspace.ca/canuck-cp-classicpress-theme/">Canuck CP</a> theme is required!</span>');
