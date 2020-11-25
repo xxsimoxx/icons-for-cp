@@ -119,7 +119,7 @@ class IconsForCanuckCp{
 	function check_callback() {
 		function title_check() {
 			$title = $_REQUEST['post_title'];
-			if (!preg_match('/^[a-z\-]+$/', $title)) {
+			if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
 				return [
 					'message' => 'Caution: only lowercase letters and dashes are allowed in the title.',
 					'status'  => 'error',
@@ -128,7 +128,7 @@ class IconsForCanuckCp{
 			if (function_exists('canuckcp_icon_select') && in_array($title, canuckcp_icon_select())) {
 				return [
 					'message' => 'Caution: there is already an icon called '.$title.'.',
-					'status'  => 'error',
+					'status'  => 'notice notice-warning',
 				];
 			}
 			return [
