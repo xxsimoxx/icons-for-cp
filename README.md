@@ -15,7 +15,6 @@ To keep them add `define('KEEP_ICONS_FOR_CANUCK_CP', true);` to `wp-config.php`.
 
 ## Add shortcode and MCE menu for Canuck CP FontAwesome icons.
 
-You can add new icons (from FontAwesome or your own SVG) to Canuck CP
 You can use Canuck CP's icons in your content using a shortcode:
 ```
 [canuckcp-icons icon='paw' size='16' color='#FF0000']

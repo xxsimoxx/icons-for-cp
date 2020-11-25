@@ -15,32 +15,19 @@ License URI:        https://www.gnu.org/licenses/gpl-2.0.html
 Add shortcode and MCE menu for Canuck CP FontAwesome icons.
 
 == Description ==
-
-# About the Plugin
-
-## Add new icons 
+# Plugin description
+### Add new icons 
 Add your own icons or any from FontAwesome to the theme.
 Just use the "Icons" menu in "Appearance" menu.
 Put the name of the icon as the title (use something like my-brand-icon) and the SVG as the post.
 
-Note: if you uninstall the plugin your icons get lost.
-To keep them add `define('KEEP_ICONS_FOR_CANUCK_CP', true);` to `wp-config.php`.
+*Note: if you uninstall the plugin your icons get lost.
+To keep them add `define('KEEP_ICONS_FOR_CANUCK_CP', true);` to `wp-config.php`.*
 
-
-## Add shortcode and MCE menu for Canuck CP FontAwesome icons.
-
-You can add new icons (from FontAwesome or your own SVG) to Canuck CP
+### Add shortcode and MCE menu for Canuck CP FontAwesome icons.
 You can use Canuck CP's icons in your content using a shortcode:
 ```
 [canuckcp-icons icon='paw' size='16' color='#FF0000']
 ```
 
 It also adds a menu to TinyMCE to choose the icon and insert the shortcode for you.
-
-== Changelog ==
-
-# Changelog
-## 0.0.1
-First release
-## 0.0.2
-Added logo
