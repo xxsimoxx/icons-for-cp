@@ -19,7 +19,7 @@ Add shortcode and MCE menu for Canuck CP FontAwesome icons.
 # About the Plugin
 
 ## Add new icons 
-Add your own icons or any from FontAwesome to the teme.
+Add your own icons or any from FontAwesome to the theme.
 Just use the "Icons" menu in "Appearance" menu.
 
 *Note: if you uninstall the plugin your icons get lost.*
