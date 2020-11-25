@@ -17,7 +17,7 @@ jQuery(document).ready(function($){
 
 		} );
 
-	};
+	}
 
 	$('#title').change(function() {
 		var title = $('#title').val();
