@@ -8,6 +8,8 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Author: Gieffe edizioni srl
  * Author URI: https://www.gieffeedizioni.it
+ * Text Domain: icons-for-canuck-cp
+ * Domain Path: /languages
  */
 
 namespace XXSimoXX\IconsForCanuckCp;
@@ -22,6 +24,9 @@ require_once('UpdateClient.class.php');
 class IconsForCanuckCp{
 
 	public function __construct() {
+
+		// Load text domain.
+		add_action('plugins_loaded', [$this, 'text_domain']);
 
 		// Register custom post type to store icons.
 		add_action('init', [$this, 'register_cpt']);
@@ -56,6 +61,36 @@ class IconsForCanuckCp{
 
 	}
 
+	public function text_domain() {
+		load_plugin_textdomain('icons-for-canuck-cp', false, basename(dirname(__FILE__)).'/languages');
+	}
+
+	public function register_cpt() {
+		$labels = [
+			'name'                => __('Icons', 'icons-for-canuck-cp'),
+			'singular_name'       => __('Icon', 'icons-for-canuck-cp'),
+			'add_new'             => __('New icon', 'icons-for-canuck-cp'),
+			'add_new_item'        => __('Add new icon', 'icons-for-canuck-cp'),
+			'edit_item'           => __('Edit icon', 'icons-for-canuck-cp'),
+			'new_item'            => __('New icon', 'icons-for-canuck-cp'),
+			'all_items'           => __('Icons', 'icons-for-canuck-cp'),
+			'view_item'           => __('View icon', 'icons-for-canuck-cp'),
+			'search_items'        => __('Search icons', 'icons-for-canuck-cp'),
+			'not_found'           => __('No icons found', 'icons-for-canuck-cp'),
+			'not_found_in_trash'  => __('No icons found in trash', 'icons-for-canuck-cp'),
+			'menu_name'           => __('Icons', 'icons-for-canuck-cp'),
+		];
+		$args = [
+			'public'        => false,
+			'show_ui'       => true,
+			'show_in_menu'  => 'themes.php',
+			'rewrite'       => false,
+			'supports'      => ['title', 'editor'],
+			'labels'        => $labels,
+		];
+		register_post_type('canuckcp-icons', $args);
+	}
+
 	public function remove_rich_editing ($default) {
 		global $post;
 		if (isset($post->post_type) && $post->post_type === 'canuckcp-icons') {
@@ -73,35 +108,10 @@ class IconsForCanuckCp{
 
 	public function title_placeholder($placeholder, $post) {
 		if (get_post_type($post) === 'canuckcp-icons') {
-			$placeholder = 'icon-name';
+			/* translators: placeholder for title */
+			$placeholder = __('icon-name', 'icons-for-canuck-cp');
 		}
 		return $placeholder;
-	}
-
-	public function register_cpt() {
-		$labels = [
-			'name'                => 'Icons',
-			'singular_name'       => 'Icon',
-			'add_new'             => 'New icon',
-			'add_new_item'        => 'Add new icon',
-			'edit_item'           => 'Edit icon',
-			'new_item'            => 'New icon',
-			'all_items'           => 'Icons',
-			'view_item'           => 'View icon',
-			'search_items'        => 'Search icons',
-			'not_found'           => 'No icons found',
-			'not_found_in_trash'  => 'No icons found in trash',
-			'menu_name'           => 'Icons',
-		];
-		$args = [
-			'public'        => false,
-			'show_ui'       => true,
-			'show_in_menu'  => 'themes.php',
-			'rewrite'       => false,
-			'supports'      => ['title', 'editor'],
-			'labels'        => $labels,
-		];
-		register_post_type('canuckcp-icons', $args);
 	}
 
 	public function postcheck($hook) {
@@ -124,18 +134,18 @@ class IconsForCanuckCp{
 			$title = $_REQUEST['post_title'];
 			if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
 				return [
-					'message' => 'Caution: only lowercase letters and dashes are allowed in the title.',
+					'message' => __('Caution: only lowercase letters and dashes are allowed in the title.', 'icons-for-canuck-cp'),
 					'status'  => 'error',
 				];
 			}
 			if (function_exists('canuckcp_icon_select') && in_array($title, canuckcp_icon_select())) {
 				return [
-					'message' => 'Caution: there is already an icon called '.$title.'.',
+					'message' => __('Caution: there is already an icon called '.$title.'.', 'icons-for-canuck-cp'),
 					'status'  => 'notice notice-warning',
 				];
 			}
 			return [
-					'message' => 'Title is good as icon name.',
+					'message' => __('Title is good as icon name.', 'icons-for-canuck-cp'),
 					'status'  => 'updated',
 				];
 		}
@@ -177,14 +187,18 @@ class IconsForCanuckCp{
 		if (basename($file) !== basename(__FILE__)) {
 			return $links;
 		}
-		array_push($links, '<span class="dashicons-before dashicons-warning"><a href="https://kevinsspace.ca/canuck-cp-classicpress-theme/">Canuck CP</a> theme is required!</span>');
+		$url = 'https://kevinsspace.ca/canuck-cp-classicpress-theme';
+		$message = '<span class="dashicons-before dashicons-warning">'.sprintf(wp_kses(__('<a href="%s">Canuck CP</a> theme is required!', 'icons-for-canuck-cp'), ['a' => [ 'href' => []]]), esc_url($url)).'</span>';
+		array_push($links, $message);
 		return $links;
 	}
 
 	public function process_shortcode($atts, $content = null) {
-		if (!function_exists('canuckcp_svg')) {
-			if (is_admin()) {
-				return '<a href="https://kevinsspace.ca/canuck-cp-classicpress-theme/">Canuck CP</a> is not installed (only admins can see this)!';
+		if (!function_exists('canuckcp_svgX')) {
+			if (current_user_can('manage_options')) {
+				$url = 'https://kevinsspace.ca/canuck-cp-classicpress-theme';
+				$message = sprintf(wp_kses(__('[ICON PLACEHOLDER] <a href="%s">Canuck CP</a> is not installed (only admins can see this)!', 'icons-for-canuck-cp'), ['a' => [ 'href' => []]]), esc_url($url)).'</span>';
+				return $message;
 			}
 			return '';
 		}
@@ -219,6 +233,8 @@ class IconsForCanuckCp{
 			return;
 		}
 		echo '<script type=\'text/javascript\'>';
+		/* Translators: MCE button name */
+		echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-canuck-cp').'";';
 		echo 'ifcp_mce_menu_content=[';
 		$icons = canuckcp_icon_select();
 		foreach ($icons as $icon) {
