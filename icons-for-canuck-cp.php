@@ -127,15 +127,24 @@ class IconsForCanuckCp{
 			return;
 		}
 		wp_enqueue_script('ifcp_post_check', plugins_url('js/postchecks.js', __FILE__), ['jquery'], false, true);
+		wp_localize_script('ifcp_post_check', 'nonce', [
+			'url' => admin_url('admin-ajax.php'),
+			'nonce' => wp_create_nonce('ifcp-ajax-nonce'),
+		]);
 	}
 
 	function check_callback() {
 		function title_check() {
 			$title = $_REQUEST['post_title'];
+			$nonce = $_REQUEST['nonce'];
+			if (!wp_verify_nonce($nonce, 'ifcp-ajax-nonce')) {
+				die('Nonce error!');
+			}
 			if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
 				return [
 					'message' => __('Caution: only lowercase letters, dashes and digits dashes are allowed in the title.', 'icons-for-canuck-cp'),
 					'status'  => 'error',
+					'proceed' => false,
 				];
 			}
 			if (function_exists('canuckcp_icon_select') && in_array($title, canuckcp_icon_select())) {
@@ -143,11 +152,13 @@ class IconsForCanuckCp{
 					/* Translators: %s name of the icon */
 					'message' => sprintf(__('Caution: there is already an icon called %s.', 'icons-for-canuck-cp'), $title),
 					'status'  => 'notice notice-warning',
+					'proceed' => false,
 				];
 			}
 			return [
 					'message' => __('Title is good as icon name.', 'icons-for-canuck-cp'),
 					'status'  => 'updated',
+					'proceed' => true,
 				];
 		}
 		$response = title_check();
