@@ -135,10 +135,13 @@ class IconsForCanuckCp{
 
 	function check_callback() {
 		function title_check() {
+			if (!(isset($_REQUEST['post_title']) && isset($_REQUEST['nonce']))) {
+				die('Missing post arguments.');
+			};
 			$title = $_REQUEST['post_title'];
 			$nonce = $_REQUEST['nonce'];
 			if (!wp_verify_nonce($nonce, 'ifcp-ajax-nonce')) {
-				die('Nonce error!');
+				die('Nonce error.');
 			}
 			if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
 				return [
