@@ -35,5 +35,7 @@ jQuery(document).ready(function($){
 			ifcpcheck(title);
 		}
 	});
+	
+	  wp.codeEditor.initialize(jQuery('#content'));
 
 });
