@@ -33,6 +33,8 @@ class IconsForCanuckCp{
 		// Remove rich editing and buttons
 		add_filter('user_can_richedit', [$this, 'remove_rich_editing']);
 		add_action('admin_head', [$this, 'remove_buttons']);
+		// Add preview metabox
+		add_action('add_meta_boxes_canuckcp-icons', [$this, 'preview']);
 		// Adjust title
 		add_filter('enter_title_here', [$this, 'title_placeholder'], 10, 2);
 		// Do checks before saving content
@@ -81,12 +83,12 @@ class IconsForCanuckCp{
 			'menu_name'           => __('Icons', 'icons-for-canuck-cp'),
 		];
 		$args = [
-			'public'        => false,
-			'show_ui'       => true,
-			'show_in_menu'  => 'themes.php',
-			'rewrite'       => false,
-			'supports'      => ['title', 'editor'],
-			'labels'        => $labels,
+			'public'                => false,
+			'show_ui'               => true,
+			'show_in_menu'          => 'themes.php',
+			'rewrite'               => false,
+			'supports'              => ['title', 'editor'],
+			'labels'                => $labels,
 		];
 		register_post_type('canuckcp-icons', $args);
 	}
@@ -104,6 +106,16 @@ class IconsForCanuckCp{
 		if ($current_screen->post_type === 'canuckcp-icons') {
 			remove_action('media_buttons', 'media_buttons');
 		}
+	}
+
+	public function preview() {
+		add_meta_box('canuckcp-icons-pw', __('Preview'), [$this, 'preview_callback'], null, 'side');
+	}
+
+	public function preview_callback($post) {
+		echo '<div id="canuckcp-icons-pw-inner">';
+		echo get_post_field('post_content', $post, 'raw');
+		echo '</div>';
 	}
 
 	public function title_placeholder($placeholder, $post) {
