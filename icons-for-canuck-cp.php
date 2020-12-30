@@ -139,9 +139,10 @@ class IconsForCanuckCp{
 			return;
 		}
 		wp_enqueue_script('ifcp_post_check', plugins_url('js/postchecks.js', __FILE__), ['jquery'], false, true);
-		wp_localize_script('ifcp_post_check', 'nonce', [
-			'url' => admin_url('admin-ajax.php'),
-			'nonce' => wp_create_nonce('ifcp-ajax-nonce'),
+		wp_localize_script('ifcp_post_check', 'external', [
+			'url'    => admin_url('admin-ajax.php'),
+			'nonce'  => wp_create_nonce('ifcp-ajax-nonce'),
+			'postid' => $post->ID,
 		]);
 		$cm_settings['codeEditor'] = wp_enqueue_code_editor(['type' => 'image/svg+xml']);
 		wp_enqueue_script('wp-theme-plugin-editor');
@@ -151,11 +152,12 @@ class IconsForCanuckCp{
 
 	function check_callback() {
 		function title_check() {
-			if (!(isset($_REQUEST['post_title']) && isset($_REQUEST['nonce']))) {
+			if (!(isset($_REQUEST['post_title']) && isset($_REQUEST['postid']) && isset($_REQUEST['nonce']))) {
 				die('Missing post arguments.');
 			};
 			$title = $_REQUEST['post_title'];
 			$nonce = $_REQUEST['nonce'];
+			$postid = $_REQUEST['postid'];
 			if (!wp_verify_nonce($nonce, 'ifcp-ajax-nonce')) {
 				die('Nonce error.');
 			}
@@ -166,7 +168,7 @@ class IconsForCanuckCp{
 					'proceed' => false,
 				];
 			}
-			if (function_exists('canuckcp_icon_select') && in_array($title, canuckcp_icon_select())) {
+			if (function_exists('canuckcp_icon_select') && in_array($title, canuckcp_icon_select()) && $title !== get_the_title($postid)) {
 				return [
 					/* Translators: %s name of the icon */
 					'message' => sprintf(__('Caution: there is already an icon called %s.', 'icons-for-canuck-cp'), $title),

@@ -4,15 +4,16 @@ jQuery(document).ready(function($){
 
 	function ifcpcheck(title) {
 		var data = {
-			action: 'ifcp_postcheck',
-			post_title: title,
-			nonce: nonce.nonce,
+			action     : 'ifcp_postcheck',
+			post_title : title,
+			nonce      : external.nonce,
+			postid     : external.postid,
 		};
 
 		jQuery.ajax( {
-			url		: ajaxurl,
-			data	: data,
-			dataType: 'json',
+			url		   : ajaxurl,
+			data	   : data,
+			dataType   : 'json',
 		} ).done( function (data) {
 
 			jQuery('#message').remove();
