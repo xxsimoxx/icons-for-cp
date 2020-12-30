@@ -138,7 +138,7 @@ class IconsForCanuckCp{
 		if ($post_type !== 'canuckcp-icons') {
 			return;
 		}
-		wp_enqueue_script('ifcp_post_check', plugins_url('js/postchecks.js', __FILE__), ['jquery'], false, true);
+		wp_enqueue_script('ifcp_post_check', plugins_url('js/posteditor.js', __FILE__), ['jquery'], false, true);
 		wp_localize_script('ifcp_post_check', 'external', [
 			'url'    => admin_url('admin-ajax.php'),
 			'nonce'  => wp_create_nonce('ifcp-ajax-nonce'),
