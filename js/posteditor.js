@@ -38,7 +38,7 @@ jQuery(document).ready(function($){
 		}
 	});
 
-	editor.codemirror.on('change',function(cMirror){
+	editor.codemirror.on('change',function(){
 	  jQuery('#canuckcp-icons-pw-inner').html(editor.codemirror.getValue());
 	});
 
