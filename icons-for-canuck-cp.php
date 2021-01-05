@@ -172,21 +172,25 @@ class IconsForCanuckCp{
 	}
 
 	function check_callback() {
-		
+
 		if (!(isset($_REQUEST['post_title']) && isset($_REQUEST['postid']) && isset($_REQUEST['nonce']))) {
 			die('Missing post arguments.');
 		};
+
 		$title = $_REQUEST['post_title'];
 		$nonce = $_REQUEST['nonce'];
 		$postid = $_REQUEST['postid'];
+
 		if (!wp_verify_nonce($nonce, 'ifcp-ajax-nonce')) {
 			die('Nonce error.');
 		}
+
 		$response = [
 			'message' => __('Title is good as icon name.', 'icons-for-canuck-cp'),
 			'status'  => 'updated',
 			'proceed' => true,
 		];
+
 		if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
 			$response = [
 				'message' => __('Caution: only lowercase letters, dashes and digits dashes are allowed in the title.', 'icons-for-canuck-cp'),
@@ -194,6 +198,7 @@ class IconsForCanuckCp{
 				'proceed' => false,
 			];
 		}
+
 		$this->fill_svg_array();
 		if (isset($this->all_icons[$title]) && $title !== get_the_title($postid)) {
 			$response = [
