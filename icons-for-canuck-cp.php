@@ -97,6 +97,7 @@ class IconsForCanuckCp{
 			'rewrite'               => false,
 			'supports'              => ['title', 'editor'],
 			'labels'                => $labels,
+			'exclude_from_search'   => true,
 		];
 		register_post_type('canuckcp-icons', $args);
 	}
