@@ -23,6 +23,8 @@ require_once('UpdateClient.class.php');
 
 class IconsForCanuckCp{
 
+	private $all_icons;
+
 	public function __construct() {
 
 		// Load text domain.
@@ -53,9 +55,6 @@ class IconsForCanuckCp{
 		// Add icons from CPT to Canuck CP theme
 		add_filter ('canuckcp_icons', [$this, 'add_icons']);
 		add_filter ('canuckcp_icon_select', [$this, 'icon_select']);
-
-		// Alert if Canuck CP is not installed or activated
-		add_filter('plugin_row_meta', [$this, 'check_canuck'], 10, 2);
 
 		// Add shortcode for icons
 		// Usage: [canuckcp-icons icon='paw' size='16' color='#FF0000']
@@ -284,20 +283,6 @@ class IconsForCanuckCp{
 		return $icons;
 	}
 
-	public function check_canuck($links, $file) {
-		if (function_exists('canuckcp_svg')) {
-			return $links;
-		}
-		if (basename($file) !== basename(__FILE__)) {
-			return $links;
-		}
-		$url = 'https://kevinsspace.ca/canuck-cp-classicpress-theme';
-		/* Translators: %s is the link URL */
-		$message = '<span class="dashicons-before dashicons-warning">'.sprintf(wp_kses(__('<a href="%s">Canuck CP</a> theme is required!', 'icons-for-canuck-cp'), ['a' => [ 'href' => []]]), esc_url($url)).'</span>';
-		array_push($links, $message);
-		return $links;
-	}
-
 	public function process_shortcode($atts, $content = null) {
 		if (!function_exists('canuckcp_svg')) {
 			if (current_user_can('manage_options')) {
@@ -313,7 +298,7 @@ class IconsForCanuckCp{
 			'width' => '16',
 			'color' => '#000000',
 		], $atts));
-		return '<span>'.canuckcp_svg($icon, $width, $color).'</span>';
+		return '<span>'.$this->get_svg($icon, $width, $color).'</span>';
 	}
 
 	public function admin_head_menu() {
@@ -338,12 +323,13 @@ class IconsForCanuckCp{
 		if (!$this->can_do_mce()) {
 			return;
 		}
+		$this->fill_svg_array();
 		echo '<script type=\'text/javascript\'>';
 		/* Translators: MCE button name */
 		echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-canuck-cp').'";';
 		echo 'ifcp_mce_menu_content=[';
-		$icons = canuckcp_icon_select();
-		foreach ($icons as $icon) {
+		//$icons = canuckcp_icon_select();
+		foreach ($this->all_icons as $icon => $content) {
 			echo '{text: "'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[canuckcp-icons icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},';
 		}
 		echo ']';
@@ -351,9 +337,6 @@ class IconsForCanuckCp{
 	}
 
 	private function can_do_mce() {
-		if (!function_exists('canuckcp_svg')) {
-			return false;
-		}
 		if (!current_user_can('edit_posts') && !current_user_can('edit_pages')) {
 			return false;
 		}
@@ -361,6 +344,44 @@ class IconsForCanuckCp{
 			return false;
 		}
 		return true;
+	}
+
+	private function fill_svg_array() {
+		if (!empty($this->all_icons)) {
+			return;
+		}
+		if (function_exists('canuckcp_icon_array')) {
+			$this->all_icons = canuckcp_icon_array();
+		}
+		$query = new \WP_Query(['post_type' => 'canuckcp-icons']);
+		$posts = $query->posts;
+		foreach ($posts as $post) {
+			$this->all_icons[get_the_title($post)] = get_post_field('post_content', $post, 'raw');
+		}
+	}
+
+	private function get_svg($icon, $icon_width = '16', $icon_color = '#7f7f7f') {
+		/**
+		 * Code inspired from Canuck CP ClassicPress Theme
+		 * by Kevin Archibald <https://kevinsspace.ca/contact/>
+		 */
+		$this->fill_svg_array();
+
+		if ($icon === '') {
+			return;
+		}
+		if (!isset($this->all_icons[$icon])) {
+			return;
+		}
+
+		$icon_picked = $this->all_icons[$icon];
+
+		$width       = '<svg class="icon-svg-class" width="'.$icon_width.'"';
+		$fill        = '<path class="icon-path-class '.$icon.'" fill="'.$icon_color.'"';
+		$icon_picked = str_replace('<svg', $width, $icon_picked);
+		$icon_picked = str_replace('<path', $fill, $icon_picked);
+
+		return $icon_picked;
 	}
 
 	public static function uninstall() {
