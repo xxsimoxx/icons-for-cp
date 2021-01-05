@@ -33,8 +33,13 @@ class IconsForCanuckCp{
 		// Remove rich editing and buttons
 		add_filter('user_can_richedit', [$this, 'remove_rich_editing']);
 		add_action('admin_head', [$this, 'remove_buttons']);
-		// Add preview metabox
+		// Add preview meta box
 		add_action('add_meta_boxes_canuckcp-icons', [$this, 'preview']);
+		// Add import meta box and handle Ajax
+		if (function_exists('curl_version') || true) {
+			add_action('add_meta_boxes_canuckcp-icons', [$this, 'import_from_url']);
+			add_action('wp_ajax_ifcp_import', [$this, 'import_ajax_callback']);
+		}
 		// Adjust title
 		add_filter('enter_title_here', [$this, 'title_placeholder'], 10, 2);
 		// Do checks before saving content
@@ -112,10 +117,25 @@ class IconsForCanuckCp{
 		add_meta_box('canuckcp-icons-pw', __('Preview'), [$this, 'preview_callback'], null, 'side');
 	}
 
+
 	public function preview_callback($post) {
 		echo '<div id="canuckcp-icons-pw-inner">';
 		echo get_post_field('post_content', $post, 'raw');
 		echo '</div>';
+	}
+
+	public function import_from_url() {
+		add_meta_box('canuckcp-icons-import', __('Import'), [$this, 'import_callback']);
+	}
+
+	public function import_callback($post) {
+		echo '<input size=100 type="text" id="ifcp-import-url" value="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs/regular/thumbs-up.svg"> ';
+		echo '<input type="button" name="import" class="button button-large" id="ifcp-import-do" value="'.__('Import').'">';
+		echo '<span class="spinner" id="ifcp-import-spinner"></span>';
+		echo '';
+		echo '';
+		echo '';
+
 	}
 
 	public function title_placeholder($placeholder, $post) {
@@ -183,6 +203,40 @@ class IconsForCanuckCp{
 				];
 		}
 		$response = title_check();
+		echo wp_json_encode($response);
+		die();
+	}
+
+	function import_ajax_callback() {
+		if (!(isset($_REQUEST['remote_url']) && isset($_REQUEST['nonce']))) {
+			die('Missing post arguments.');
+		};
+		$remote_url = $_REQUEST['remote_url'];
+		$nonce = $_REQUEST['nonce'];
+		if (!wp_verify_nonce($nonce, 'ifcp-ajax-nonce')) {
+			die('Nonce error.');
+		}
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $remote_url);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$icon = curl_exec($ch);
+		if (curl_errno($ch)) {
+			$response = ['bad' => true, 'error' => curl_error($ch)];
+			echo wp_json_encode($response);
+			die();
+		}
+		$resultStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if ($resultStatus !== 200) {
+			$response = ['bad' => true, 'error' => 'Request failed: HTTP status code: '.$resultStatus];
+			echo wp_json_encode($response);
+			die();
+		}
+
+		$response = ['bad' => false, 'icon' => $icon];
+		curl_close($ch);
+
 		echo wp_json_encode($response);
 		die();
 	}
