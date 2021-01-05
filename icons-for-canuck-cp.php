@@ -38,7 +38,7 @@ class IconsForCanuckCp{
 		// Add preview meta box
 		add_action('add_meta_boxes_canuckcp-icons', [$this, 'preview']);
 		// Add import meta box and handle Ajax
-		if (function_exists('curl_version') || true) {
+		if (function_exists('curl_version')) {
 			add_action('add_meta_boxes_canuckcp-icons', [$this, 'import_from_url']);
 			add_action('wp_ajax_ifcp_import', [$this, 'import_ajax_callback']);
 		}
@@ -53,8 +53,10 @@ class IconsForCanuckCp{
 		add_action('manage_canuckcp-icons_posts_custom_column', [$this, 'custom_column_handle'], 10, 2);
 
 		// Add icons from CPT to Canuck CP theme
-		add_filter ('canuckcp_icons', [$this, 'add_icons']);
-		add_filter ('canuckcp_icon_select', [$this, 'icon_select']);
+		if (function_exists('canuckcp_icon_select')) {
+			add_filter ('canuckcp_icons', [$this, 'add_icons']);
+			add_filter ('canuckcp_icon_select', [$this, 'icon_select']);
+		}
 
 		// Add shortcode for icons
 		// Usage: [canuckcp-icons icon='paw' size='16' color='#FF0000']
@@ -170,38 +172,38 @@ class IconsForCanuckCp{
 	}
 
 	function check_callback() {
-		function title_check() {
-			if (!(isset($_REQUEST['post_title']) && isset($_REQUEST['postid']) && isset($_REQUEST['nonce']))) {
-				die('Missing post arguments.');
-			};
-			$title = $_REQUEST['post_title'];
-			$nonce = $_REQUEST['nonce'];
-			$postid = $_REQUEST['postid'];
-			if (!wp_verify_nonce($nonce, 'ifcp-ajax-nonce')) {
-				die('Nonce error.');
-			}
-			if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
-				return [
-					'message' => __('Caution: only lowercase letters, dashes and digits dashes are allowed in the title.', 'icons-for-canuck-cp'),
-					'status'  => 'error',
-					'proceed' => false,
-				];
-			}
-			if (function_exists('canuckcp_icon_select') && in_array($title, canuckcp_icon_select()) && $title !== get_the_title($postid)) {
-				return [
-					/* Translators: %s name of the icon */
-					'message' => sprintf(__('Caution: there is already an icon called %s.', 'icons-for-canuck-cp'), $title),
-					'status'  => 'notice notice-warning',
-					'proceed' => false,
-				];
-			}
-			return [
-					'message' => __('Title is good as icon name.', 'icons-for-canuck-cp'),
-					'status'  => 'updated',
-					'proceed' => true,
-				];
+		
+		if (!(isset($_REQUEST['post_title']) && isset($_REQUEST['postid']) && isset($_REQUEST['nonce']))) {
+			die('Missing post arguments.');
+		};
+		$title = $_REQUEST['post_title'];
+		$nonce = $_REQUEST['nonce'];
+		$postid = $_REQUEST['postid'];
+		if (!wp_verify_nonce($nonce, 'ifcp-ajax-nonce')) {
+			die('Nonce error.');
 		}
-		$response = title_check();
+		$response = [
+			'message' => __('Title is good as icon name.', 'icons-for-canuck-cp'),
+			'status'  => 'updated',
+			'proceed' => true,
+		];
+		if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
+			$response = [
+				'message' => __('Caution: only lowercase letters, dashes and digits dashes are allowed in the title.', 'icons-for-canuck-cp'),
+				'status'  => 'error',
+				'proceed' => false,
+			];
+		}
+		$this->fill_svg_array();
+		if (isset($this->all_icons[$title]) && $title !== get_the_title($postid)) {
+			$response = [
+				/* Translators: %s name of the icon */
+				'message' => sprintf(__('Caution: there is already an icon called %s.', 'icons-for-canuck-cp'), $title),
+				'status'  => 'notice notice-warning',
+				'proceed' => false,
+			];
+		}
+
 		echo wp_json_encode($response);
 		die();
 	}
@@ -284,15 +286,6 @@ class IconsForCanuckCp{
 	}
 
 	public function process_shortcode($atts, $content = null) {
-		if (!function_exists('canuckcp_svg')) {
-			if (current_user_can('manage_options')) {
-				$url = 'https://kevinsspace.ca/canuck-cp-classicpress-theme';
-				/* Translators: %s is the link URL */
-				$message = sprintf(wp_kses(__('[ICON PLACEHOLDER] <a href="%s">Canuck CP</a> is not installed (only admins can see this)!', 'icons-for-canuck-cp'), ['a' => [ 'href' => []]]), esc_url($url)).'</span>';
-				return $message;
-			}
-			return '';
-		}
 		extract(shortcode_atts([
 			'icon'  => 'question-circle',
 			'width' => '16',
@@ -328,7 +321,6 @@ class IconsForCanuckCp{
 		/* Translators: MCE button name */
 		echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-canuck-cp').'";';
 		echo 'ifcp_mce_menu_content=[';
-		//$icons = canuckcp_icon_select();
 		foreach ($this->all_icons as $icon => $content) {
 			echo '{text: "'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[canuckcp-icons icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},';
 		}
