@@ -46,6 +46,10 @@ class IconsForCanuckCp{
 		add_action('admin_enqueue_scripts', [$this, 'postcheck'], 2000);
 		add_action('wp_ajax_ifcp_postcheck', [$this, 'check_callback']);
 
+		// Add preview in icons list
+		add_filter('manage_canuckcp-icons_posts_columns', [$this, 'custom_columns']);
+		add_action('manage_canuckcp-icons_posts_custom_column', [$this, 'custom_column_handle'], 10, 2);
+
 		// Add icons from CPT to Canuck CP theme
 		add_filter ('canuckcp_icons', [$this, 'add_icons']);
 		add_filter ('canuckcp_icon_select', [$this, 'icon_select']);
@@ -132,10 +136,6 @@ class IconsForCanuckCp{
 		echo '<input size=100 type="text" id="ifcp-import-url" value="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs/regular/thumbs-up.svg"> ';
 		echo '<input type="button" name="import" class="button button-large" id="ifcp-import-do" value="'.__('Import').'">';
 		echo '<span class="spinner" id="ifcp-import-spinner"></span>';
-		echo '';
-		echo '';
-		echo '';
-
 	}
 
 	public function title_placeholder($placeholder, $post) {
@@ -239,6 +239,23 @@ class IconsForCanuckCp{
 
 		echo wp_json_encode($response);
 		die();
+	}
+
+	public function custom_columns($columns) {
+		$columns['preview'] = __('Preview').'<style>.column-preview { min-width: 30px;}</style>';
+		return $columns;
+	}
+
+	public function custom_column_handle($column, $post_id) {
+		switch ($column) {
+			case 'preview' :
+				$post = get_post($post_id);
+								echo '<span>';
+
+				echo get_post_field('post_content', $post, 'raw');
+				echo '</span>';
+			break;
+		}
 	}
 
 	public function add_icons($icons) {
