@@ -32,9 +32,10 @@ class IconsForCanuckCp{
 
 		// Register custom post type to store icons.
 		add_action('init', [$this, 'register_cpt']);
-		// Remove rich editing and buttons
+		// Remove rich editing, buttons and autosave
 		add_filter('user_can_richedit', [$this, 'remove_rich_editing']);
 		add_action('admin_head', [$this, 'remove_buttons']);
+		add_action('admin_enqueue_scripts', [$this, 'remove_autosave']);
 		// Add preview meta box
 		add_action('add_meta_boxes_icons-for-cp', [$this, 'preview']);
 		// Add import meta box and handle Ajax
@@ -117,6 +118,13 @@ class IconsForCanuckCp{
 		if ($current_screen->post_type === 'icons-for-cp') {
 			remove_action('media_buttons', 'media_buttons');
 		}
+	}
+
+	public function remove_autosave() {
+		if ( get_post_type() !== 'icons-for-cp') {
+			return;
+		}
+		wp_dequeue_script('autosave');
 	}
 
 	public function preview() {
