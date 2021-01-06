@@ -1,6 +1,6 @@
 ![Logo](images/logo-for-readme.jpg)
  
-# Icons for Canuck CP
+# Icons for CP
 
 This plugin allows to use SVG icons in post and pages.
 

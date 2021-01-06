@@ -8,7 +8,7 @@ Tested:             4.9.99
 Author:             Gieffe edizioni
 Author URI:         https://www.gieffeedizioni.it
 Plugin URI:         https://software.gieffeedizioni.it
-Download link:      https://github.com/xxsimoxx/icons-for-canuck-cp/releases/download/v0.1.0/icons-for-cp-0.1.0.zip
+Download link:      https://github.com/xxsimoxx/icons-for-cp/releases/download/v0.1.0/icons-for-cp-0.1.0.zip
 License:            GPLv2
 License URI:        https://www.gnu.org/licenses/gpl-2.0.html
     
