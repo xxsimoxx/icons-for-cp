@@ -8,11 +8,11 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Author: Gieffe edizioni srl
  * Author URI: https://www.gieffeedizioni.it
- * Text Domain: icons-for-canuck-cp
+ * Text Domain: icons-for-cp
  * Domain Path: /languages
  */
 
-namespace XXSimoXX\IconsForCanuckCp;
+namespace XXSimoXX\IconsForCp;
 
 if (!defined('ABSPATH')) {
 	die('-1');
@@ -73,25 +73,25 @@ class IconsForCanuckCp{
 	}
 
 	public function text_domain() {
-		load_plugin_textdomain('icons-for-canuck-cp', false, basename(dirname(__FILE__)).'/languages');
+		load_plugin_textdomain('icons-for-cp', false, basename(dirname(__FILE__)).'/languages');
 	}
 
 	public function register_cpt() {
 		// Check if customizer exists
 		$where = function_exists('is_customize_preview')?'themes.php':true;
 		$labels = [
-			'name'                => __('Icons', 'icons-for-canuck-cp'),
-			'singular_name'       => __('Icon', 'icons-for-canuck-cp'),
-			'add_new'             => __('New icon', 'icons-for-canuck-cp'),
-			'add_new_item'        => __('Add new icon', 'icons-for-canuck-cp'),
-			'edit_item'           => __('Edit icon', 'icons-for-canuck-cp'),
-			'new_item'            => __('New icon', 'icons-for-canuck-cp'),
-			'all_items'           => __('Icons', 'icons-for-canuck-cp'),
-			'view_item'           => __('View icon', 'icons-for-canuck-cp'),
-			'search_items'        => __('Search icons', 'icons-for-canuck-cp'),
-			'not_found'           => __('No icons found', 'icons-for-canuck-cp'),
-			'not_found_in_trash'  => __('No icons found in trash', 'icons-for-canuck-cp'),
-			'menu_name'           => __('Icons', 'icons-for-canuck-cp'),
+			'name'                => __('Icons', 'icons-for-cp'),
+			'singular_name'       => __('Icon', 'icons-for-cp'),
+			'add_new'             => __('New icon', 'icons-for-cp'),
+			'add_new_item'        => __('Add new icon', 'icons-for-cp'),
+			'edit_item'           => __('Edit icon', 'icons-for-cp'),
+			'new_item'            => __('New icon', 'icons-for-cp'),
+			'all_items'           => __('Icons', 'icons-for-cp'),
+			'view_item'           => __('View icon', 'icons-for-cp'),
+			'search_items'        => __('Search icons', 'icons-for-cp'),
+			'not_found'           => __('No icons found', 'icons-for-cp'),
+			'not_found_in_trash'  => __('No icons found in trash', 'icons-for-cp'),
+			'menu_name'           => __('Icons', 'icons-for-cp'),
 		];
 		$args = [
 			'public'                => false,
@@ -151,7 +151,7 @@ class IconsForCanuckCp{
 	public function title_placeholder($placeholder, $post) {
 		if (get_post_type($post) === 'icons-for-cp') {
 			/* translators: placeholder for title */
-			$placeholder = __('icon-name', 'icons-for-canuck-cp');
+			$placeholder = __('icon-name', 'icons-for-cp');
 		}
 		return $placeholder;
 	}
@@ -195,14 +195,14 @@ class IconsForCanuckCp{
 		}
 
 		$response = [
-			'message' => __('Title is good as icon name.', 'icons-for-canuck-cp'),
+			'message' => __('Title is good as icon name.', 'icons-for-cp'),
 			'status'  => 'updated',
 			'proceed' => true,
 		];
 
 		if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
 			$response = [
-				'message' => __('Caution: only lowercase letters, dashes and digits dashes are allowed in the title.', 'icons-for-canuck-cp'),
+				'message' => __('Caution: only lowercase letters, dashes and digits dashes are allowed in the title.', 'icons-for-cp'),
 				'status'  => 'error',
 				'proceed' => false,
 			];
@@ -212,7 +212,7 @@ class IconsForCanuckCp{
 		if (isset($this->all_icons[$title]) && $title !== get_the_title($postid)) {
 			$response = [
 				/* Translators: %s name of the icon */
-				'message' => sprintf(__('Caution: there is already an icon called %s.', 'icons-for-canuck-cp'), $title),
+				'message' => sprintf(__('Caution: there is already an icon called %s.', 'icons-for-cp'), $title),
 				'status'  => 'notice notice-warning',
 				'proceed' => false,
 			];
@@ -333,7 +333,7 @@ class IconsForCanuckCp{
 		$this->fill_svg_array();
 		echo '<script type=\'text/javascript\'>';
 		/* Translators: MCE button name */
-		echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-canuck-cp').'";';
+		echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-cp').'";';
 		echo 'ifcp_mce_menu_content=[';
 		foreach ($this->all_icons as $icon => $content) {
 			echo '{text: "'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},';
