@@ -255,7 +255,7 @@ class IconsForCanuckCp{
 	}
 
 	public function custom_columns($columns) {
-		$columns['preview'] = __('Preview').'<style>.column-preview { min-width: 30px;}</style>';
+		$columns['preview'] = __('Preview').'<style>.column-preview { min-width: 40px; text-align: right !important; }</style>';
 		return $columns;
 	}
 
