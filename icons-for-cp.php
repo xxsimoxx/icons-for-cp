@@ -78,7 +78,7 @@ class IconsForCanuckCp{
 
 	public function register_cpt() {
 		// Check if customizer exists
-		$where = function_exists('is_customize_preview')?'themes.php':true;
+		$where = function_exists('is_customize_preview') ? 'themes.php' : true;
 		$labels = [
 			'name'                => __('Icons', 'icons-for-cp'),
 			'singular_name'       => __('Icon', 'icons-for-cp'),
@@ -121,7 +121,7 @@ class IconsForCanuckCp{
 	}
 
 	public function remove_autosave() {
-		if ( get_post_type() !== 'icons-for-cp') {
+		if (get_post_type() !== 'icons-for-cp') {
 			return;
 		}
 		wp_dequeue_script('autosave');
@@ -328,6 +328,9 @@ class IconsForCanuckCp{
 
 	public function generate_menu_items() {
 		if (!$this->can_do_mce()) {
+			return;
+		}
+		if (empty($this->all_icons)) {
 			return;
 		}
 		$this->fill_svg_array();
