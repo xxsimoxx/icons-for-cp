@@ -36,19 +36,13 @@ class IconsForCanuckCp{
 		add_filter('user_can_richedit', [$this, 'remove_rich_editing']);
 		add_action('admin_head', [$this, 'remove_buttons']);
 		add_action('admin_enqueue_scripts', [$this, 'remove_autosave']);
-		// Add preview meta box
-		add_action('add_meta_boxes_icons-for-cp', [$this, 'preview']);
-		// Add import meta box and handle Ajax
-		if (function_exists('curl_version')) {
-			add_action('add_meta_boxes_icons-for-cp', [$this, 'import_from_url']);
-			add_action('wp_ajax_ifcp_import', [$this, 'import_ajax_callback']);
-		}
+		// Handle Ajax import callback
+		add_action('wp_ajax_ifcp_import', [$this, 'import_ajax_callback']);
 		// Adjust title
 		add_filter('enter_title_here', [$this, 'title_placeholder'], 10, 2);
 		// Do checks before saving content
 		add_action('admin_enqueue_scripts', [$this, 'postcheck'], 2000);
 		add_action('wp_ajax_ifcp_postcheck', [$this, 'check_callback']);
-
 		// Add preview in icons list
 		add_filter('manage_icons-for-cp_posts_columns', [$this, 'custom_columns']);
 		add_action('manage_icons-for-cp_posts_custom_column', [$this, 'custom_column_handle'], 10, 2);
@@ -101,6 +95,7 @@ class IconsForCanuckCp{
 			'supports'              => ['title', 'editor'],
 			'labels'                => $labels,
 			'exclude_from_search'   => true,
+			'register_meta_box_cb'	=> [$this, 'add_meta_boxes'],
 		];
 		register_post_type('icons-for-cp', $args);
 	}
@@ -127,8 +122,12 @@ class IconsForCanuckCp{
 		wp_dequeue_script('autosave');
 	}
 
-	public function preview() {
+	public function add_meta_boxes() {
 		add_meta_box('ifcp-pw', __('Preview'), [$this, 'preview_callback'], null, 'side');
+		if (!function_exists('curl_version')) {
+			return;
+		}
+		add_meta_box('ifcp-import', __('Import'), [$this, 'import_callback']);
 	}
 
 
@@ -136,10 +135,6 @@ class IconsForCanuckCp{
 		echo '<div id="ifcp-pw-inner">';
 		echo get_post_field('post_content', $post, 'raw');
 		echo '</div>';
-	}
-
-	public function import_from_url() {
-		add_meta_box('ifcp-import', __('Import'), [$this, 'import_callback']);
 	}
 
 	public function import_callback($post) {
@@ -223,6 +218,9 @@ class IconsForCanuckCp{
 	}
 
 	function import_ajax_callback() {
+		if (!function_exists('curl_version')) {
+			return;
+		}
 		if (!(isset($_REQUEST['remote_url']) && isset($_REQUEST['nonce']))) {
 			die('Missing post arguments.');
 		};
