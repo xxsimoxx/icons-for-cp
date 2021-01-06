@@ -25,7 +25,7 @@ Just use the "Icons" menu in "Appearance" menu.
 Put the name of the icon as the title (use something like my-brand-icon) and the SVG as the post.
 
 *Note: if you uninstall the plugin your icons get lost.
-To keep them add `define('KEEP_ICONS_FOR_CANUCK_CP', true);` to `wp-config.php`.*
+To keep them add `define('KEEP_ICONS_FOR_CP', true);` to `wp-config.php`.*
 
 ### Add shortcode and MCE menu for Canuck CP FontAwesome icons.
 You can use Canuck CP's icons in your content using a shortcode:

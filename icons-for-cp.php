@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Icons for Canuck CP
+ * Plugin Name: Icons for CP
  * Plugin URI: https://software.gieffeedizioni.it
- * Description: Add new icons, shortcode and MCE menu for Canuck CP FontAwesome icons.
- * Version: 0.0.7
+ * Description: Manage and use SVG icons in your posts and pages.
+ * Version: 0.1.0
  * License: GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Author: Gieffe edizioni srl
@@ -36,10 +36,10 @@ class IconsForCanuckCp{
 		add_filter('user_can_richedit', [$this, 'remove_rich_editing']);
 		add_action('admin_head', [$this, 'remove_buttons']);
 		// Add preview meta box
-		add_action('add_meta_boxes_canuckcp-icons', [$this, 'preview']);
+		add_action('add_meta_boxes_icons-for-cp', [$this, 'preview']);
 		// Add import meta box and handle Ajax
 		if (function_exists('curl_version')) {
-			add_action('add_meta_boxes_canuckcp-icons', [$this, 'import_from_url']);
+			add_action('add_meta_boxes_icons-for-cp', [$this, 'import_from_url']);
 			add_action('wp_ajax_ifcp_import', [$this, 'import_ajax_callback']);
 		}
 		// Adjust title
@@ -49,16 +49,16 @@ class IconsForCanuckCp{
 		add_action('wp_ajax_ifcp_postcheck', [$this, 'check_callback']);
 
 		// Add preview in icons list
-		add_filter('manage_canuckcp-icons_posts_columns', [$this, 'custom_columns']);
-		add_action('manage_canuckcp-icons_posts_custom_column', [$this, 'custom_column_handle'], 10, 2);
+		add_filter('manage_icons-for-cp_posts_columns', [$this, 'custom_columns']);
+		add_action('manage_icons-for-cp_posts_custom_column', [$this, 'custom_column_handle'], 10, 2);
 
 		// Add icons from CPT to Canuck CP theme
 		add_filter ('canuckcp_icons', [$this, 'add_icons']);
 		add_filter ('canuckcp_icon_select', [$this, 'icon_select']);
 
 		// Add shortcode for icons
-		// Usage: [canuckcp-icons icon='paw' size='16' color='#FF0000']
-		add_shortcode('canuckcp-icons', [$this, 'process_shortcode']);
+		// Usage: [ifcp-icon icon='paw' size='16' color='#FF0000']
+		add_shortcode('ifcp-icon', [$this, 'process_shortcode']);
 
 		// Add MCE menu
 		foreach (['post.php','post-new.php'] as $hook) {
@@ -76,6 +76,8 @@ class IconsForCanuckCp{
 	}
 
 	public function register_cpt() {
+		// Check if customizer exists
+		$where = function_exists('is_customize_preview')?'themes.php':true;
 		$labels = [
 			'name'                => __('Icons', 'icons-for-canuck-cp'),
 			'singular_name'       => __('Icon', 'icons-for-canuck-cp'),
@@ -93,18 +95,18 @@ class IconsForCanuckCp{
 		$args = [
 			'public'                => false,
 			'show_ui'               => true,
-			'show_in_menu'          => 'themes.php',
+			'show_in_menu'          => $where,
 			'rewrite'               => false,
 			'supports'              => ['title', 'editor'],
 			'labels'                => $labels,
 			'exclude_from_search'   => true,
 		];
-		register_post_type('canuckcp-icons', $args);
+		register_post_type('icons-for-cp', $args);
 	}
 
 	public function remove_rich_editing ($default) {
 		global $post;
-		if (isset($post->post_type) && $post->post_type === 'canuckcp-icons') {
+		if (isset($post->post_type) && $post->post_type === 'icons-for-cp') {
 			return false;
 		}
 		return $default;
@@ -112,24 +114,24 @@ class IconsForCanuckCp{
 
 	public function remove_buttons () {
 		global $current_screen;
-		if ($current_screen->post_type === 'canuckcp-icons') {
+		if ($current_screen->post_type === 'icons-for-cp') {
 			remove_action('media_buttons', 'media_buttons');
 		}
 	}
 
 	public function preview() {
-		add_meta_box('canuckcp-icons-pw', __('Preview'), [$this, 'preview_callback'], null, 'side');
+		add_meta_box('ifcp-pw', __('Preview'), [$this, 'preview_callback'], null, 'side');
 	}
 
 
 	public function preview_callback($post) {
-		echo '<div id="canuckcp-icons-pw-inner">';
+		echo '<div id="ifcp-pw-inner">';
 		echo get_post_field('post_content', $post, 'raw');
 		echo '</div>';
 	}
 
 	public function import_from_url() {
-		add_meta_box('canuckcp-icons-import', __('Import'), [$this, 'import_callback']);
+		add_meta_box('ifcp-import', __('Import'), [$this, 'import_callback']);
 	}
 
 	public function import_callback($post) {
@@ -139,7 +141,7 @@ class IconsForCanuckCp{
 	}
 
 	public function title_placeholder($placeholder, $post) {
-		if (get_post_type($post) === 'canuckcp-icons') {
+		if (get_post_type($post) === 'icons-for-cp') {
 			/* translators: placeholder for title */
 			$placeholder = __('icon-name', 'icons-for-canuck-cp');
 		}
@@ -155,7 +157,7 @@ class IconsForCanuckCp{
 		if (!isset($post->post_type)) {
 			return;
 		}
-		if ($post_type !== 'canuckcp-icons') {
+		if ($post_type !== 'icons-for-cp') {
 			return;
 		}
 		wp_enqueue_script('ifcp_post_check', plugins_url('js/posteditor.js', __FILE__), ['jquery'], false, true);
@@ -265,7 +267,7 @@ class IconsForCanuckCp{
 
 	public function add_icons($icons) {
 		$args = [
-			'post_type' => 'canuckcp-icons',
+			'post_type' => 'icons-for-cp',
 			'public'    => 'true',
 		];
 		$posts = get_posts($args);
@@ -278,7 +280,7 @@ class IconsForCanuckCp{
 
 	public function icon_select($icons) {
 		$args = [
-			'post_type' => 'canuckcp-icons',
+			'post_type' => 'icons-for-cp',
 			'public'    => 'true',
 		];
 		$posts = get_posts($args);
@@ -326,7 +328,7 @@ class IconsForCanuckCp{
 		echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-canuck-cp').'";';
 		echo 'ifcp_mce_menu_content=[';
 		foreach ($this->all_icons as $icon => $content) {
-			echo '{text: "'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[canuckcp-icons icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},';
+			echo '{text: "'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},';
 		}
 		echo ']';
 		echo '</script>';
@@ -349,7 +351,7 @@ class IconsForCanuckCp{
 		if (function_exists('canuckcp_icon_array')) {
 			$this->all_icons = canuckcp_icon_array();
 		}
-		$query = new \WP_Query(['post_type' => 'canuckcp-icons']);
+		$query = new \WP_Query(['post_type' => 'icons-for-cp']);
 		$posts = $query->posts;
 		foreach ($posts as $post) {
 			$this->all_icons[get_the_title($post)] = get_post_field('post_content', $post, 'raw');
@@ -381,11 +383,11 @@ class IconsForCanuckCp{
 	}
 
 	public static function uninstall() {
-		if (defined('\KEEP_ICONS_FOR_CANUCK_CP') && KEEP_ICONS_FOR_CANUCK_CP === true) {
+		if (defined('\KEEP_ICONS_FOR_CP') && KEEP_ICONS_FOR_CP === true) {
 			return;
 		}
 		$allposts = get_posts([
-			'post_type'   => 'canuckcp-icons',
+			'post_type'   => 'icons-for-cp',
 			'post_status' => 'any',
 		]);
 		foreach ($allposts as $eachpost) {
