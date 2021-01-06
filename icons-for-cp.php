@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
 // Add auto updater https://codepotent.com/classicpress/plugins/update-manager/
 require_once('UpdateClient.class.php');
 
-class IconsForCanuckCp{
+class IconsForCp{
 
 	private $all_icons;
 
@@ -406,4 +406,4 @@ class IconsForCanuckCp{
 
 }
 
-new IconsForCanuckCp;
+new IconsForCp;
