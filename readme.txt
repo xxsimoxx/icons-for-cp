@@ -38,3 +38,9 @@ It also adds a menu to TinyMCE to choose the icon and insert the shortcode for y
 ### Canuck CP
 This plugin integrates with [Canuck CP](https://kevinsspace.ca/canuck-cp-classicpress-theme/).
 Your icons are added to those present in the theme, and those present in the theme are available.
+
+== Screenshots ==
+1. Icons.
+2. Creating an icon.
+3. Insert an icon in page.
+4. Canuck CP with custom icons.
