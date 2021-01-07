@@ -88,6 +88,16 @@ class IconsForCp{
 			'not_found_in_trash'  => __('No icons found in trash', 'icons-for-cp'),
 			'menu_name'           => __('Icons', 'icons-for-cp'),
 		];
+		$capabilities = [
+			'edit_post'             => 'manage_options',
+			'read_post'             => 'manage_options',
+			'delete_post'           => 'manage_options',
+			'delete_posts'          => 'manage_options',
+			'edit_posts'            => 'manage_options',
+			'edit_others_posts'     => 'manage_options',
+			'publish_posts'         => 'manage_options',
+			'read_private_posts'    => 'manage_options',
+		];
 		$args = [
 			'public'                => false,
 			'show_ui'               => true,
@@ -97,6 +107,7 @@ class IconsForCp{
 			'labels'                => $labels,
 			'exclude_from_search'   => true,
 			'register_meta_box_cb'	=> [$this, 'add_meta_boxes'],
+			'capabilities'       	=> $capabilities,
 		];
 		register_post_type('icons-for-cp', $args);
 	}
