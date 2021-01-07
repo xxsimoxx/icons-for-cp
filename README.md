@@ -16,8 +16,9 @@ To keep them add `define('KEEP_ICONS_FOR_CP', true);` to `wp-config.php`.*
 ## Shortcode and MCE menu
 
 ```
-[ifcp-icon icon='paw' size='16' color='#FF0000']
+[ifcp-icon icon='paw' size='16' color='#FF0000' class='my-wonderful-class']
 ```
+Size, color and class are optional.
 
 It also adds a menu to TinyMCE to choose the icon and insert the shortcode for you.
 

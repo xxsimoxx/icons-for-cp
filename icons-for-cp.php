@@ -57,8 +57,8 @@ class IconsForCp{
 
 		// Add MCE menu
 		foreach (['post.php','post-new.php'] as $hook) {
-			add_action('admin_head-'.$hook, [$this, 'admin_head_menu']);
-			add_action('admin_head-'.$hook, [$this, 'generate_menu_items']);
+			add_action('admin_head-'.$hook, [$this, 'admin_head_menu'], 20);
+			add_action('admin_head-'.$hook, [$this, 'generate_menu_items'], 10);
 		}
 
 		// Uninstall.
@@ -349,13 +349,21 @@ class IconsForCp{
 		extract(shortcode_atts([
 			'icon'  => 'question-circle',
 			'width' => '16',
-			'color' => '#000000',
+			'color' => '#7f7f7f',
+			'class' => '',
 		], $atts));
-		return '<span>'.$this->get_svg($icon, $width, $color).'</span>';
+		if ($class !== '') {
+			$class = ' class="'.$class.'"';
+		}
+		return '<span'.$class.'>'.$this->get_svg($icon, $width, $color).'</span>';
 	}
 
 	public function admin_head_menu() {
 		if (!$this->can_do_mce()) {
+			return;
+		}
+		$this->fill_svg_array();
+		if (empty($this->all_icons)) {
 			return;
 		}
 		add_filter('mce_external_plugins', [$this, 'add_mce_plugin']);
@@ -376,10 +384,11 @@ class IconsForCp{
 		if (!$this->can_do_mce()) {
 			return;
 		}
+		$this->fill_svg_array();
 		if (empty($this->all_icons)) {
 			return;
 		}
-		$this->fill_svg_array();
+		
 		echo '<script type=\'text/javascript\'>';
 		/* Translators: MCE button name */
 		echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-cp').'";';
