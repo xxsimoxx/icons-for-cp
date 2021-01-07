@@ -26,7 +26,6 @@ Add your own icons or any from FontAwesome to the theme.
 Put the name of the icon as the title (use something like my-brand-icon) and the SVG as the post.
 
 *Note: if you uninstall the plugin your icons get lost.
-To keep them add `define('KEEP_ICONS_FOR_CP', true);` to `wp-config.php`.*
 
 ### Shortcode and MCE menu
 ```
@@ -40,8 +39,31 @@ It also adds a menu to TinyMCE to choose the icon and insert the shortcode for y
 This plugin integrates with [Canuck CP](https://kevinsspace.ca/canuck-cp-classicpress-theme/).
 Your icons are added to those present in the theme, and those present in the theme are available.
 
+== Frequently asked questions ==
+> Can I export my icons to another website?
+
+Yes, go to Tools -> Export and export "Icons".
+
+> Who can add, change or delete icons?
+
+Only Admins can add, change or delete icons.
+The icons can be used by anyone who can edit posts.
+
+> What happends to my icons when I uninstall Icons for CP?
+
+Icons will be deleted (only the ones you added, not Canuck CP icons).
+To keep them add `define('KEEP_ICONS_FOR_CP', true);` to `wp-config.php`.
+
+> Do you track plugin usage?
+
+To help us know the number of active installations of this plugin, we collect and store anonymized data when the plugin check in for updates. The date and unique plugin identifier are stored as plain text and the requesting URL is stored as a non-reversible hashed value. This data is stored for up to 28 days.
+
+
 == Screenshots ==
 1. Icons.
 2. Creating an icon.
 3. Insert an icon in page.
 4. Canuck CP with custom icons.
+
+== Changelog ==
+No changelog before 1.0.0
