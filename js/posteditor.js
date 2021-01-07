@@ -4,7 +4,8 @@ jQuery(document).ready(function($){
 
 	function ifcpcheck(title) {
 		var data = {
-			action     : 'ifcp_postcheck',
+			action     : 'ifcp',
+			req		   : 'title',
 			post_title : title,
 			nonce      : external.nonce,
 			postid     : external.postid,
@@ -34,7 +35,8 @@ jQuery(document).ready(function($){
 	function importicon(url) {
 
 		var data = {
-			action     : 'ifcp_import',
+			action     : 'ifcp',
+			req		   : 'import',
 			remote_url : url,
 			nonce      : external.nonce,
 		};

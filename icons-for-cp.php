@@ -32,17 +32,17 @@ class IconsForCp{
 
 		// Register custom post type to store icons.
 		add_action('init', [$this, 'register_cpt']);
-		// Remove rich editing, buttons and autosave
+
+		// Remove rich editing, buttons, autosave and adjust title
 		add_filter('user_can_richedit', [$this, 'remove_rich_editing']);
 		add_action('admin_head', [$this, 'remove_buttons']);
 		add_action('admin_enqueue_scripts', [$this, 'remove_autosave']);
-		// Handle Ajax import callback
-		add_action('wp_ajax_ifcp_import', [$this, 'import_ajax_callback']);
-		// Adjust title
 		add_filter('enter_title_here', [$this, 'title_placeholder'], 10, 2);
-		// Do checks before saving content
-		add_action('admin_enqueue_scripts', [$this, 'postcheck'], 2000);
-		add_action('wp_ajax_ifcp_postcheck', [$this, 'check_callback']);
+
+		// Add scripts to post editor and handle Ajax
+		add_action('admin_enqueue_scripts', [$this, 'edit_post_scripts'], 2000);
+		add_action('wp_ajax_ifcp', [$this, 'ajax_callback']);
+
 		// Add preview in icons list
 		add_filter('manage_icons-for-cp_posts_columns', [$this, 'custom_columns']);
 		add_action('manage_icons-for-cp_posts_custom_column', [$this, 'custom_column_handle'], 10, 2);
@@ -100,6 +100,26 @@ class IconsForCp{
 		register_post_type('icons-for-cp', $args);
 	}
 
+	public function add_meta_boxes() {
+		add_meta_box('ifcp-pw', __('Preview'), [$this, 'preview_callback'], null, 'side');
+		if (!function_exists('curl_version')) {
+			return;
+		}
+		add_meta_box('ifcp-import', __('Import'), [$this, 'import_callback']);
+	}
+
+	public function preview_callback($post) {
+		echo '<div id="ifcp-pw-inner">';
+		echo get_post_field('post_content', $post, 'raw');
+		echo '</div>';
+	}
+
+	public function import_callback($post) {
+		echo '<input size=100 type="text" id="ifcp-import-url" value="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs/regular/thumbs-up.svg"> ';
+		echo '<input type="button" name="import" class="button button-large" id="ifcp-import-do" value="'.__('Import').'">';
+		echo '<span class="spinner" id="ifcp-import-spinner"></span>';
+	}
+
 	public function remove_rich_editing ($default) {
 		global $post;
 		if (isset($post->post_type) && $post->post_type === 'icons-for-cp') {
@@ -122,27 +142,6 @@ class IconsForCp{
 		wp_dequeue_script('autosave');
 	}
 
-	public function add_meta_boxes() {
-		add_meta_box('ifcp-pw', __('Preview'), [$this, 'preview_callback'], null, 'side');
-		if (!function_exists('curl_version')) {
-			return;
-		}
-		add_meta_box('ifcp-import', __('Import'), [$this, 'import_callback']);
-	}
-
-
-	public function preview_callback($post) {
-		echo '<div id="ifcp-pw-inner">';
-		echo get_post_field('post_content', $post, 'raw');
-		echo '</div>';
-	}
-
-	public function import_callback($post) {
-		echo '<input size=100 type="text" id="ifcp-import-url" value="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs/regular/thumbs-up.svg"> ';
-		echo '<input type="button" name="import" class="button button-large" id="ifcp-import-do" value="'.__('Import').'">';
-		echo '<span class="spinner" id="ifcp-import-spinner"></span>';
-	}
-
 	public function title_placeholder($placeholder, $post) {
 		if (get_post_type($post) === 'icons-for-cp') {
 			/* translators: placeholder for title */
@@ -151,7 +150,7 @@ class IconsForCp{
 		return $placeholder;
 	}
 
-	public function postcheck($hook) {
+	public function edit_post_scripts($hook) {
 		if (!in_array($hook, ['edit.php', 'post.php', 'post-new.php'])) {
 			return;
 		}
@@ -175,83 +174,85 @@ class IconsForCp{
 		wp_enqueue_style('wp-codemirror');
 	}
 
-	function check_callback() {
+	public function ajax_callback() {  //phpcs:ignore
 
-		if (!(isset($_REQUEST['post_title']) && isset($_REQUEST['postid']) && isset($_REQUEST['nonce']))) {
-			die('Missing post arguments.');
-		};
-
-		$title = $_REQUEST['post_title'];
-		$nonce = $_REQUEST['nonce'];
-		$postid = $_REQUEST['postid'];
-
-		if (!wp_verify_nonce($nonce, 'ifcp-ajax-nonce')) {
+		if (!isset($_REQUEST['nonce'])) {
+			die('Missing nonce.');
+		}
+		if (!wp_verify_nonce($_REQUEST['nonce'], 'ifcp-ajax-nonce')) {
 			die('Nonce error.');
 		}
-
-		$response = [
-			'message' => __('Title is good as icon name.', 'icons-for-cp'),
-			'status'  => 'updated',
-			'proceed' => true,
-		];
-
-		if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
-			$response = [
-				'message' => __('Caution: only lowercase letters, dashes and digits dashes are allowed in the title.', 'icons-for-cp'),
-				'status'  => 'error',
-				'proceed' => false,
-			];
+		if (!isset($_REQUEST['req'])) {
+			die('Missing requested action.');
 		}
 
-		$this->fill_svg_array();
-		if (isset($this->all_icons[$title]) && $title !== get_the_title($postid)) {
-			$response = [
-				/* Translators: %s name of the icon */
-				'message' => sprintf(__('Caution: there is already an icon called %s.', 'icons-for-cp'), $title),
-				'status'  => 'notice notice-warning',
-				'proceed' => false,
-			];
-		}
+		switch ($_REQUEST['req']) {
+
+			case 'title':
+				if (!(isset($_REQUEST['post_title']) && isset($_REQUEST['postid']))) {
+					die('Missing post arguments.');
+				}
+				$title = $_REQUEST['post_title'];
+				$postid = $_REQUEST['postid'];
+				if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
+					$response = [
+						'message' => __('Caution: only lowercase letters, dashes and digits dashes are allowed in the title.', 'icons-for-cp'),
+						'status'  => 'error',
+						'proceed' => false,
+					];
+					break;
+				}
+				$this->fill_svg_array();
+				if (isset($this->all_icons[$title]) && $title !== get_the_title($postid)) {
+					$response = [
+						/* Translators: %s name of the icon */
+						'message' => sprintf(__('Caution: there is already an icon called %s.', 'icons-for-cp'), $title),
+						'status'  => 'notice notice-warning',
+						'proceed' => false,
+					];
+					break;
+				}
+				$response = [
+					'message' => __('Title is good as icon name.', 'icons-for-cp'),
+					'status'  => 'updated',
+					'proceed' => true,
+				];
+				break;
+
+			case 'import':
+				if (!function_exists('curl_version')) {
+					die('Missing curl.');
+				}
+				if (!isset($_REQUEST['remote_url'])) {
+					die('Missing post arguments.');
+				};
+				$remote_url = $_REQUEST['remote_url'];
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, $remote_url);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+				$icon = curl_exec($ch);
+				if (curl_errno($ch)) {
+					$response = ['bad' => true, 'error' => curl_error($ch)];
+					break;
+				}
+				$resultStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+				if ($resultStatus !== 200) {
+					$response = ['bad' => true, 'error' => 'Request failed: HTTP status code: '.$resultStatus];
+					break;
+				}
+				$response = ['bad' => false, 'icon' => $icon];
+				curl_close($ch);
+				break;
+
+			default:
+					die('Unimplemented request.');
+
+		} // switch
 
 		echo wp_json_encode($response);
 		die();
-	}
 
-	function import_ajax_callback() {
-		if (!function_exists('curl_version')) {
-			return;
-		}
-		if (!(isset($_REQUEST['remote_url']) && isset($_REQUEST['nonce']))) {
-			die('Missing post arguments.');
-		};
-		$remote_url = $_REQUEST['remote_url'];
-		$nonce = $_REQUEST['nonce'];
-		if (!wp_verify_nonce($nonce, 'ifcp-ajax-nonce')) {
-			die('Nonce error.');
-		}
-
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $remote_url);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$icon = curl_exec($ch);
-		if (curl_errno($ch)) {
-			$response = ['bad' => true, 'error' => curl_error($ch)];
-			echo wp_json_encode($response);
-			die();
-		}
-		$resultStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		if ($resultStatus !== 200) {
-			$response = ['bad' => true, 'error' => 'Request failed: HTTP status code: '.$resultStatus];
-			echo wp_json_encode($response);
-			die();
-		}
-
-		$response = ['bad' => false, 'icon' => $icon];
-		curl_close($ch);
-
-		echo wp_json_encode($response);
-		die();
 	}
 
 	public function custom_columns($columns) {
@@ -272,6 +273,7 @@ class IconsForCp{
 	}
 
 	public function add_icons($icons) {
+		// Filter for Canuck CP
 		$args = [
 			'post_type' => 'icons-for-cp',
 			'public'    => 'true',
@@ -285,6 +287,7 @@ class IconsForCp{
 	}
 
 	public function icon_select($icons) {
+		// Filter for Canuck CP
 		$args = [
 			'post_type' => 'icons-for-cp',
 			'public'    => 'true',
@@ -295,6 +298,44 @@ class IconsForCp{
 			$icons += [ $icon['post_name'] => $icon['post_name'] ];
 		}
 		return $icons;
+	}
+
+	private function fill_svg_array() {
+		if (!empty($this->all_icons)) {
+			return;
+		}
+		if (function_exists('canuckcp_icon_array')) {
+			$this->all_icons = canuckcp_icon_array();
+		}
+		$query = new \WP_Query(['post_type' => 'icons-for-cp']);
+		$posts = $query->posts;
+		foreach ($posts as $post) {
+			$this->all_icons[get_the_title($post)] = get_post_field('post_content', $post, 'raw');
+		}
+	}
+
+	private function get_svg($icon, $icon_width = '16', $icon_color = '#7f7f7f') {
+		/**
+		 * Code inspired from Canuck CP ClassicPress Theme
+		 * by Kevin Archibald <https://kevinsspace.ca/contact/>
+		 */
+		$this->fill_svg_array();
+
+		if ($icon === '') {
+			return;
+		}
+		if (!isset($this->all_icons[$icon])) {
+			return;
+		}
+
+		$icon_picked = $this->all_icons[$icon];
+
+		$width       = '<svg class="icon-svg-class" width="'.$icon_width.'"';
+		$fill        = '<path class="icon-path-class '.$icon.'" fill="'.$icon_color.'"';
+		$icon_picked = str_replace('<svg', $width, $icon_picked);
+		$icon_picked = str_replace('<path', $fill, $icon_picked);
+
+		return $icon_picked;
 	}
 
 	public function process_shortcode($atts, $content = null) {
@@ -351,44 +392,6 @@ class IconsForCp{
 			return false;
 		}
 		return true;
-	}
-
-	private function fill_svg_array() {
-		if (!empty($this->all_icons)) {
-			return;
-		}
-		if (function_exists('canuckcp_icon_array')) {
-			$this->all_icons = canuckcp_icon_array();
-		}
-		$query = new \WP_Query(['post_type' => 'icons-for-cp']);
-		$posts = $query->posts;
-		foreach ($posts as $post) {
-			$this->all_icons[get_the_title($post)] = get_post_field('post_content', $post, 'raw');
-		}
-	}
-
-	private function get_svg($icon, $icon_width = '16', $icon_color = '#7f7f7f') {
-		/**
-		 * Code inspired from Canuck CP ClassicPress Theme
-		 * by Kevin Archibald <https://kevinsspace.ca/contact/>
-		 */
-		$this->fill_svg_array();
-
-		if ($icon === '') {
-			return;
-		}
-		if (!isset($this->all_icons[$icon])) {
-			return;
-		}
-
-		$icon_picked = $this->all_icons[$icon];
-
-		$width       = '<svg class="icon-svg-class" width="'.$icon_width.'"';
-		$fill        = '<path class="icon-path-class '.$icon.'" fill="'.$icon_color.'"';
-		$icon_picked = str_replace('<svg', $width, $icon_picked);
-		$icon_picked = str_replace('<path', $fill, $icon_picked);
-
-		return $icon_picked;
 	}
 
 	public static function uninstall() {
