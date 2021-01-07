@@ -49,8 +49,8 @@ class IconsForCp{
 		add_action('manage_icons-for-cp_posts_custom_column', [$this, 'custom_column_handle'], 10, 2);
 
 		// Add icons from CPT to Canuck CP theme
-		add_filter ('canuckcp_icons', [$this, 'add_icons']);
-		add_filter ('canuckcp_icon_select', [$this, 'icon_select']);
+		add_filter('canuckcp_icons', [$this, 'add_icons']);
+		add_filter('canuckcp_icon_select', [$this, 'icon_select']);
 
 		// Add shortcode for icons
 		// Usage: [ifcp-icon icon='paw' size='16' color='#FF0000']
@@ -218,7 +218,7 @@ class IconsForCp{
 				break;
 
 			default:
-					die('Unimplemented request.');
+				die('Unimplemented request.');
 
 		} // switch
 
@@ -261,15 +261,24 @@ class IconsForCp{
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		$icon = curl_exec($ch);
 		if (curl_errno($ch)) {
-			$response = ['bad' => true, 'error' => curl_error($ch)];
+			$response = [
+				'bad' => true,
+				'error' => curl_error($ch)
+			];
 			return $response;
 		}
 		$resultStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		if ($resultStatus !== 200) {
-			$response = ['bad' => true, 'error' => 'Request failed: HTTP status code: '.$resultStatus];
+			$response = [
+				'bad' => true, 
+				'error' => 'Request failed: HTTP status code: '.$resultStatus
+			];
 			return $response;
 		}
-		$response = ['bad' => false, 'icon' => $icon];
+		$response = [
+			'bad' => false,
+			'icon' => $icon
+		];
 		curl_close($ch);
 		return $response;
 	}
@@ -283,8 +292,7 @@ class IconsForCp{
 		switch ($column) {
 			case 'preview' :
 				$post = get_post($post_id);
-								echo '<span>';
-
+				echo '<span>';
 				echo get_post_field('post_content', $post, 'raw');
 				echo '</span>';
 			break;
@@ -342,21 +350,17 @@ class IconsForCp{
 		 * by Kevin Archibald <https://kevinsspace.ca/contact/>
 		 */
 		$this->fill_svg_array();
-
 		if ($icon === '') {
 			return;
 		}
 		if (!isset($this->all_icons[$icon])) {
 			return;
 		}
-
 		$icon_picked = $this->all_icons[$icon];
-
 		$width       = '<svg class="icon-svg-class" width="'.$icon_width.'"';
 		$fill        = '<path class="icon-path-class '.$icon.'" fill="'.$icon_color.'"';
 		$icon_picked = str_replace('<svg', $width, $icon_picked);
 		$icon_picked = str_replace('<path', $fill, $icon_picked);
-
 		return $icon_picked;
 	}
 
@@ -403,8 +407,7 @@ class IconsForCp{
 		if (empty($this->all_icons)) {
 			return;
 		}
-
-		echo '<script type=\'text/javascript\'>';
+		echo '<script type="text/javascript">';
 		/* Translators: MCE button name */
 		echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-cp').'";';
 		echo 'ifcp_mce_menu_content=[';
