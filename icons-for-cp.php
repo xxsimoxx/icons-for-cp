@@ -174,7 +174,7 @@ class IconsForCp{
 		wp_enqueue_style('wp-codemirror');
 	}
 
-	public function ajax_callback() {  //phpcs:ignore
+	public function ajax_callback() {
 
 		if (!isset($_REQUEST['nonce'])) {
 			die('Missing nonce.');
@@ -192,31 +192,7 @@ class IconsForCp{
 				if (!(isset($_REQUEST['post_title']) && isset($_REQUEST['postid']))) {
 					die('Missing post arguments.');
 				}
-				$title = $_REQUEST['post_title'];
-				$postid = $_REQUEST['postid'];
-				if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
-					$response = [
-						'message' => __('Caution: only lowercase letters, dashes and digits dashes are allowed in the title.', 'icons-for-cp'),
-						'status'  => 'error',
-						'proceed' => false,
-					];
-					break;
-				}
-				$this->fill_svg_array();
-				if (isset($this->all_icons[$title]) && $title !== get_the_title($postid)) {
-					$response = [
-						/* Translators: %s name of the icon */
-						'message' => sprintf(__('Caution: there is already an icon called %s.', 'icons-for-cp'), $title),
-						'status'  => 'notice notice-warning',
-						'proceed' => false,
-					];
-					break;
-				}
-				$response = [
-					'message' => __('Title is good as icon name.', 'icons-for-cp'),
-					'status'  => 'updated',
-					'proceed' => true,
-				];
+				$response = $this->check_title($_REQUEST['post_title'], $_REQUEST['postid']);
 				break;
 
 			case 'import':
@@ -226,23 +202,7 @@ class IconsForCp{
 				if (!isset($_REQUEST['remote_url'])) {
 					die('Missing post arguments.');
 				};
-				$remote_url = $_REQUEST['remote_url'];
-				$ch = curl_init();
-				curl_setopt($ch, CURLOPT_URL, $remote_url);
-				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-				$icon = curl_exec($ch);
-				if (curl_errno($ch)) {
-					$response = ['bad' => true, 'error' => curl_error($ch)];
-					break;
-				}
-				$resultStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-				if ($resultStatus !== 200) {
-					$response = ['bad' => true, 'error' => 'Request failed: HTTP status code: '.$resultStatus];
-					break;
-				}
-				$response = ['bad' => false, 'icon' => $icon];
-				curl_close($ch);
+				$response = $this->fetch_svg($_REQUEST['remote_url']);
 				break;
 
 			default:
@@ -253,6 +213,53 @@ class IconsForCp{
 		echo wp_json_encode($response);
 		die();
 
+	}
+
+	private function check_title($title, $postid) {
+		if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
+			$response = [
+				'message' => __('Caution: only lowercase letters, dashes and digits dashes are allowed in the title.', 'icons-for-cp'),
+				'status'  => 'error',
+				'proceed' => false,
+			];
+			return $response;
+		}
+		$this->fill_svg_array();
+		if (isset($this->all_icons[$title]) && $title !== get_the_title($postid)) {
+			$response = [
+				/* Translators: %s name of the icon */
+				'message' => sprintf(__('Caution: there is already an icon called %s.', 'icons-for-cp'), $title),
+				'status'  => 'notice notice-warning',
+				'proceed' => false,
+			];
+			return $response;
+		}
+		$response = [
+			'message' => __('Title is good as icon name.', 'icons-for-cp'),
+			'status'  => 'updated',
+			'proceed' => true,
+		];
+		return $response;
+	}
+
+	private function fetch_svg ($remote_url) {
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $remote_url);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$icon = curl_exec($ch);
+		if (curl_errno($ch)) {
+			$response = ['bad' => true, 'error' => curl_error($ch)];
+			return $response;
+		}
+		$resultStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if ($resultStatus !== 200) {
+			$response = ['bad' => true, 'error' => 'Request failed: HTTP status code: '.$resultStatus];
+			return $response;
+		}
+		$response = ['bad' => false, 'icon' => $icon];
+		curl_close($ch);
+		return $response;
 	}
 
 	public function custom_columns($columns) {
