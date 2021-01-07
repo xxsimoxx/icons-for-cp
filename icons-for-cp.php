@@ -24,6 +24,7 @@ require_once('UpdateClient.class.php');
 class IconsForCp{
 
 	private $all_icons;
+	private $our_icons;
 
 	public function __construct() {
 
@@ -279,13 +280,20 @@ class IconsForCp{
 		}
 	}
 
+	private function get_our_icons() {
+		if (!isset($this->our_icons)) {
+			$args = [
+				'post_type' => 'icons-for-cp',
+				'public'    => 'true',
+			];
+			$this->our_icons = get_posts($args);
+		}
+		return $this->our_icons;
+	}
+
 	public function add_icons($icons) {
 		// Filter for Canuck CP
-		$args = [
-			'post_type' => 'icons-for-cp',
-			'public'    => 'true',
-		];
-		$posts = get_posts($args);
+		$posts = $this->get_our_icons();
 		foreach ($posts as $post) {
 			$icon = $post->to_array();
 			$icons += [ $icon['post_name'] => $icon['post_content'] ];
@@ -295,11 +303,7 @@ class IconsForCp{
 
 	public function icon_select($icons) {
 		// Filter for Canuck CP
-		$args = [
-			'post_type' => 'icons-for-cp',
-			'public'    => 'true',
-		];
-		$posts = get_posts($args);
+		$posts = $this->get_our_icons();
 		foreach ($posts as $post) {
 			$icon = $post->to_array();
 			$icons += [ $icon['post_name'] => $icon['post_name'] ];
