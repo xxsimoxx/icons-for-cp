@@ -48,6 +48,30 @@ Yes, go to Tools -> Export and export "Icons".
 
 Only Admins can add, change or delete icons.
 The icons can be used by anyone who can edit posts.
+You can use the filter `ifcp_capabilities` to change this, but you also have to add `unfiltered_html` capability to those users.
+
+```php
+function prefix_add_theme_caps() {
+    $role = get_role( 'author' );
+}
+add_action( 'admin_init', 'prefix_add_theme_caps',0);
+
+function prefix_capabilities($capabilities) {
+	$capabilities = [
+		'edit_post'             => 'edit_posts',
+		'read_post'             => 'edit_posts',
+		'delete_post'           => 'edit_posts',
+		'delete_posts'          => 'edit_posts',
+		'edit_posts'            => 'edit_posts',
+		'edit_others_posts'     => 'edit_posts',
+		'publish_posts'         => 'edit_posts',
+		'read_private_posts'    => 'edit_posts',
+	];
+	return $capabilities;
+}
+add_filter('ifcp_capabilities','prefix_capabilities');
+```
+
 
 > What happends to my icons when I uninstall Icons for CP?
 

@@ -72,8 +72,19 @@ class IconsForCp{
 	}
 
 	public function register_cpt() {
-		// Check if customizer exists
-		$where = function_exists('is_customize_preview') ? 'themes.php' : true;
+		$capabilities = [
+			'edit_post'             => 'manage_options',
+			'read_post'             => 'manage_options',
+			'delete_post'           => 'manage_options',
+			'delete_posts'          => 'manage_options',
+			'edit_posts'            => 'manage_options',
+			'edit_others_posts'     => 'manage_options',
+			'publish_posts'         => 'manage_options',
+			'read_private_posts'    => 'manage_options',
+		];
+		$capabilities = apply_filters('ifcp_capabilities', $capabilities);
+		// Check if customizer exists or if user is not admin, and place Icons outside customizer.
+		$where = function_exists('is_customize_preview') && current_user_can('manage_options') ? 'themes.php' : true;
 		$labels = [
 			'name'                => __('Icons', 'icons-for-cp'),
 			'singular_name'       => __('Icon', 'icons-for-cp'),
@@ -87,16 +98,6 @@ class IconsForCp{
 			'not_found'           => __('No icons found', 'icons-for-cp'),
 			'not_found_in_trash'  => __('No icons found in trash', 'icons-for-cp'),
 			'menu_name'           => __('Icons', 'icons-for-cp'),
-		];
-		$capabilities = [
-			'edit_post'             => 'manage_options',
-			'read_post'             => 'manage_options',
-			'delete_post'           => 'manage_options',
-			'delete_posts'          => 'manage_options',
-			'edit_posts'            => 'manage_options',
-			'edit_others_posts'     => 'manage_options',
-			'publish_posts'         => 'manage_options',
-			'read_private_posts'    => 'manage_options',
 		];
 		$args = [
 			'public'                => false,
