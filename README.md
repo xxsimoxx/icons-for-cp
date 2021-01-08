@@ -1,4 +1,9 @@
 ![Logo](images/logo-for-readme.jpg)
+
+[![CodeFactor](https://www.codefactor.io/repository/github/xxsimoxx/icons-for-cp/badge)](https://www.codefactor.io/repository/github/xxsimoxx/icons-for-cp)
+![GitHub language count](https://img.shields.io/github/languages/count/xxsimoxx/icons-for-cp)
+![GitHub All Releases](https://img.shields.io/github/downloads/xxsimoxx/icons-for-cp/total)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/xxsimoxx/icons-for-cp?label=Download%20latest&sort=semver)](https://github.com/xxsimoxx/icons-for-cp/releases/latest)
  
 # Icons for CP
 
