@@ -263,21 +263,21 @@ class IconsForCp{
 		if (curl_errno($ch)) {
 			$response = [
 				'bad' => true,
-				'error' => curl_error($ch)
+				'error' => curl_error($ch),
 			];
 			return $response;
 		}
 		$resultStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		if ($resultStatus !== 200) {
 			$response = [
-				'bad' => true, 
-				'error' => 'Request failed: HTTP status code: '.$resultStatus
+				'bad' => true,
+				'error' => 'Request failed: HTTP status code: '.$resultStatus,
 			];
 			return $response;
 		}
 		$response = [
 			'bad' => false,
-			'icon' => $icon
+			'icon' => $icon,
 		];
 		curl_close($ch);
 		return $response;
@@ -302,8 +302,9 @@ class IconsForCp{
 	private function get_our_icons() {
 		if (!isset($this->our_icons)) {
 			$args = [
-				'post_type' => 'icons-for-cp',
-				'public'    => 'true',
+				'post_type' 	=> 'icons-for-cp',
+				'public'    	=> 'true',
+				'numberposts'	=> -1,
 			];
 			$this->our_icons = get_posts($args);
 		}
@@ -337,8 +338,7 @@ class IconsForCp{
 		if (function_exists('canuckcp_icon_array')) {
 			$this->all_icons = canuckcp_icon_array();
 		}
-		$query = new \WP_Query(['post_type' => 'icons-for-cp']);
-		$posts = $query->posts;
+		$posts = $this->get_our_icons();
 		foreach ($posts as $post) {
 			$this->all_icons[get_the_title($post)] = get_post_field('post_content', $post, 'raw');
 		}
