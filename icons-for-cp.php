@@ -48,6 +48,9 @@ class IconsForCp{
 		add_filter('manage_icons-for-cp_posts_columns', [$this, 'custom_columns']);
 		add_action('manage_icons-for-cp_posts_custom_column', [$this, 'custom_column_handle'], 10, 2);
 
+		// Add link to icons in plugins page
+		add_filter('plugin_action_links_'.plugin_basename(__FILE__), [$this, 'settings_link']);
+
 		// Add icons from CPT to Canuck CP theme
 		add_filter('canuckcp_icons', [$this, 'add_icons']);
 		add_filter('canuckcp_icon_select', [$this, 'icon_select']);
@@ -343,6 +346,12 @@ class IconsForCp{
 		foreach ($posts as $post) {
 			$this->all_icons[get_the_title($post)] = get_post_field('post_content', $post, 'raw');
 		}
+	}
+
+	public function settings_link($links) {
+		$link = '<a href="'.admin_url('edit.php?post_type=icons-for-cp').'" title="'.__('Settings').'"><i class="dashicon dashicons-edit"></i></a>';
+		array_unshift($links, $link);
+		return $links;
 	}
 
 	private function get_svg($icon, $icon_width = '16', $icon_color = '#7f7f7f') {
