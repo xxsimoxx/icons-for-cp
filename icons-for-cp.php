@@ -21,6 +21,9 @@ if (!defined('ABSPATH')) {
 // Add auto updater https://codepotent.com/classicpress/plugins/update-manager/
 require_once('UpdateClient.class.php');
 
+// Add aWPCLI support
+require_once('classes/WPCLI.class.php');
+
 class IconsForCp{
 
 	private $all_icons;
@@ -68,6 +71,10 @@ class IconsForCp{
 			add_action('admin_head-'.$hook, [$this, 'generate_menu_items'], 10);
 		}
 
+		// Add "icons" commands to WP-CLI
+		if (defined('WP_CLI') && WP_CLI) {
+			\WP_CLI::add_command('icons', '\XXSimoXX\IconsForCp\Icons');
+		}
 		// Uninstall.
 		register_uninstall_hook(__FILE__, [__CLASS__, 'uninstall']);
 
