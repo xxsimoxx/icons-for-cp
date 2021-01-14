@@ -30,3 +30,13 @@ It also adds a menu to TinyMCE to choose the icon and insert the shortcode for y
 ## Canuck CP
 This plugin integrates with [Canuck CP](https://kevinsspace.ca/canuck-cp-classicpress-theme/).
 Your icons are added to those present in the theme, and those present in the theme are available.
+
+## WP CLI
+It is supported.
+Use `wp help icons` or `wp help icons add` to see usage instructions.
+You can bulk import a folder with a simple script like
+```sh
+for icon in *.svg; do 
+	wp icons add "$icon";
+done
+```

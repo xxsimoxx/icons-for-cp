@@ -44,6 +44,10 @@ Your icons are added to those present in the theme, and those present in the the
 
 Yes, go to Tools -> Export and export "Icons".
 
+> Can I bulk import icons?
+
+Yes, use wp-cli. You can create a script and use `wp icons add` to bulk add icons.
+
 > Who can add, change or delete icons?
 
 Only Admins can add, change or delete icons.
