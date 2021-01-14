@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
 };
 
 // Add auto updater https://codepotent.com/classicpress/plugins/update-manager/
-require_once('UpdateClient.class.php');
+require_once('classes/UpdateClient.class.php');
 
 // Add aWPCLI support
 require_once('classes/WPCLI.class.php');
