@@ -51,6 +51,9 @@ class IconsForCp{
 		// Add link to icons in plugins page
 		add_filter('plugin_action_links_'.plugin_basename(__FILE__), [$this, 'settings_link']);
 
+		// Add help
+		add_action('admin_head', [$this, 'help']);
+
 		// Add icons from CPT to Canuck CP theme
 		add_filter('canuckcp_icons', [$this, 'add_icons']);
 		add_filter('canuckcp_icon_select', [$this, 'icon_select']);
@@ -234,7 +237,7 @@ class IconsForCp{
 	private function check_title($title, $postid) {
 		if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
 			$response = [
-				'message' => __('Caution: only lowercase letters, dashes and digits dashes are allowed in the title.', 'icons-for-cp'),
+				'message' => __('Caution: only lowercase letters, dashes and digits are allowed in the title.', 'icons-for-cp'),
 				'status'  => 'error',
 				'proceed' => false,
 			];
@@ -353,6 +356,34 @@ class IconsForCp{
 		array_unshift($links, $link);
 		return $links;
 	}
+
+	public function help() {
+
+		$screen = get_current_screen();
+		if (!in_array($screen->{'id'}, ['icons-for-cp', 'edit-icons-for-cp'])) {
+			return;
+		}
+
+		/* Translators: Help menu title*/
+		$title = __('Icons for CP', 'icons-for-cp');
+		$content = '<h3>'.$title.'</h3>';
+		$content .= '<p>'.__('Place the icon name in the title (use only lowercase letters, dashes and digits, something like "my-logo-3").', 'icons-for-cp').'</p>';
+		$content .= '<p>'.__('Place the SVG code as post content (you will see your image in the Preview meta box).', 'icons-for-cp').'</p>';
+		if (function_exists('curl_version')) {
+			$content .= '<p>'.__('If you insert an URL in the Import meta box this will be fetched as post content.', 'icons-for-cp').'</p>';
+		}
+		/* Translators: this string is followed by an example shortcode*/
+		$content .= '<p>'.__('You can use your icons in posts and pages using a shortcode like this:', 'icons-for-cp').'<br>';
+		$content .= '<code>[ifcp-icon icon="paw" size="16" color="#FF0000" class="my-wonderful-class"]</code></p>';
+
+		$screen->add_help_tab([
+			'id' 		=> 'ifcp-help',
+			'title' 	=> $title,
+			'content' 	=> $content,
+		]);
+
+	}
+
 
 	private function get_svg($icon, $icon_width = '16', $icon_color = '#7f7f7f') {
 		/**
