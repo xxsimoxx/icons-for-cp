@@ -393,10 +393,7 @@ class IconsForCp{
 
 
 	private function get_svg($icon, $icon_width = '16', $icon_color = '#7f7f7f') {
-		/**
-		 * Code inspired from Canuck CP ClassicPress Theme
-		 * by Kevin Archibald <https://kevinsspace.ca/contact/>
-		 */
+
 		$this->fill_svg_array();
 		if ($icon === '') {
 			return;
@@ -405,24 +402,48 @@ class IconsForCp{
 			return;
 		}
 		$icon_picked = $this->all_icons[$icon];
-		$width       = '<svg class="icon-svg-class" width="'.$icon_width.'"';
-		$fill        = '<path class="icon-path-class '.$icon.'" fill="'.$icon_color.'"';
-		$icon_picked = str_replace('<svg', $width, $icon_picked);
-		$icon_picked = str_replace('<path', $fill, $icon_picked);
+
+		// Remove comments
+		$icon_picked = preg_replace('/<!--(.|\s)*?-->/', '', $icon_picked);
+
+		$dom = new \DOMDocument();
+		$dom->loadXML($icon_picked);
+
+		foreach ($dom->getElementsByTagName('svg') as $element) {
+			$class = 'ifcp-svg-class '.$element->getAttribute('class');
+			$element->setAttribute('class', $class);
+			$element->setAttribute('width', $icon_width);
+		}
+
+		foreach ($dom->getElementsByTagName('path') as $element) {
+			$class = 'ifcp-path-class '.$icon.' '.$element->getAttribute('class');
+			$element->setAttribute('class', $class);
+			$element->setAttribute('fill', $icon_color);
+		}
+
+		foreach ($dom->getElementsByTagName('style') as $element) {
+			$element->parentNode->removeChild($element);
+		}
+
+		$icon_picked = $dom->saveXML();
+		$icon_picked = str_replace('<?xml version="1.0"?>', '', $icon_picked);
+		$icon_picked = str_replace("\n", '', $icon_picked);
+		$icon_picked = preg_replace('/[\r\n]/', '', $icon_picked);
 		return $icon_picked;
+
 	}
 
 	public function process_shortcode($atts, $content = null) {
 		extract(shortcode_atts([
 			'icon'  => 'question-circle',
-			'width' => '16',
+			'size'  => '16',
 			'color' => '#7f7f7f',
 			'class' => '',
 		], $atts));
 		if ($class !== '') {
 			$class = ' class="'.$class.'"';
 		}
-		return '<span'.$class.'>'.$this->get_svg($icon, $width, $color).'</span>';
+		return '<span'.$class.'>'.$this->get_svg($icon, $size, $color).'</span>';
 	}
 
 	public function admin_head_menu() {
