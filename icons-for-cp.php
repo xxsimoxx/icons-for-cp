@@ -392,7 +392,7 @@ class IconsForCp{
 	}
 
 
-	private function get_svg($icon, $icon_width = '16', $icon_color = '#7f7f7f') {
+	private function get_svg($icon, $icon_width = '16', $icon_color = '#00FF00') {
 
 		$this->fill_svg_array();
 		if ($icon === '') {
@@ -403,32 +403,41 @@ class IconsForCp{
 		}
 		$icon_picked = $this->all_icons[$icon];
 
+		// Remove comments
 		$icon_picked = preg_replace('/<!--(.|\s)*?-->/', '', $icon_picked);
 
 		$dom = new \DOMDocument();
 		$dom->loadXML($icon_picked);
 
+		// Add width and class to SVG
 		foreach ($dom->getElementsByTagName('svg') as $element) {
 			$class = 'ifcp-svg-class '.$element->getAttribute('class');
 			$element->setAttribute('class', $class);
 			$element->setAttribute('width', $icon_width);
 		}
 
+		// Add width and class to paths
 		foreach ($dom->getElementsByTagName('path') as $element) {
 			$class = 'ifcp-path-class '.$icon.' '.$element->getAttribute('class');
 			$element->setAttribute('class', $class);
 			$element->setAttribute('fill', $icon_color);
 		}
 
+		// Put styles outside SVG.
+		$style = '';
 		foreach ($dom->getElementsByTagName('style') as $element) {
+			$style .= $element->nodeValue;
 			$element->parentNode->removeChild($element);
+		}
+		if ($style !== '') {
+			$style = '<style>'.$style.'</style>';
 		}
 
 		$icon_picked = $dom->saveXML();
+		// Cleanup output
 		$icon_picked = str_replace('<?xml version="1.0"?>', '', $icon_picked);
-		$icon_picked = str_replace("\n", '', $icon_picked);
 		$icon_picked = preg_replace('/[\r\n]/', '', $icon_picked);
-		return $icon_picked;
+		return $style.$icon_picked;
 
 	}
 
@@ -436,7 +445,7 @@ class IconsForCp{
 		extract(shortcode_atts([
 			'icon'  => 'question-circle',
 			'size'  => '16',
-			'color' => '#7f7f7f',
+			'color' => '#00FF00',
 			'class' => '',
 		], $atts));
 		if ($class !== '') {
