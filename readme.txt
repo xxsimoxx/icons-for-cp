@@ -1,14 +1,14 @@
 === Icons for CP ===
 
 Description:        Manage and use SVG icons in your posts and pages. 
-Version:            1.0.0-rc1         
+Version:            1.0.0        
 Requires PHP:       5.6
 Requires:           1.1.0
 Tested:             4.9.99
 Author:             Gieffe edizioni
 Author URI:         https://www.gieffeedizioni.it
 Plugin URI:         https://software.gieffeedizioni.it
-Download link:      https://github.com/xxsimoxx/icons-for-cp/releases/download/v1.0.0-rc1/icons-for-cp-1.0.0-rc1.zip
+Download link:      https://github.com/xxsimoxx/icons-for-cp/releases/download/v1.0.0/icons-for-cp-1.0.0.zip
 License:            GPLv2
 License URI:        https://www.gnu.org/licenses/gpl-2.0.html
     
@@ -82,7 +82,7 @@ add_filter('ifcp_capabilities','prefix_capabilities');
 Icons will be deleted (only the ones you added, not Canuck CP icons).
 To keep them add `define('KEEP_ICONS_FOR_CP', true);` to `wp-config.php`.
 
-> Why my SVG in sot displayed?
+> Why my SVG in not displayed?
 
 `wpautop` is not very SVG-friendly. Try disabling it adding this line to an utility plugin:
 ```php
@@ -101,4 +101,5 @@ To help us know the number of active installations of this plugin, we collect an
 4. Canuck CP with custom icons.
 
 == Changelog ==
-No changelog before 1.0.0
+= 1.0.0 =
+* Initial release
