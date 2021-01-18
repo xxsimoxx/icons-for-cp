@@ -515,7 +515,7 @@ class IconsForCp{
 	}
 
 	public static function uninstall() {
-		if (defined('\KEEP_ICONS_FOR_CP') && KEEP_ICONS_FOR_CP === true) {
+		if (defined('\KEEP_ICONS_FOR_CP') && \KEEP_ICONS_FOR_CP === true) {
 			return;
 		}
 		$allposts = get_posts([
