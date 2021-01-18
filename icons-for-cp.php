@@ -392,7 +392,7 @@ class IconsForCp{
 	}
 
 
-	private function get_svg($icon, $icon_width = '16', $icon_color = '#00FF00') {
+	private function get_svg($icon, $icon_width = '16', $icon_color = null) {
 
 		$this->fill_svg_array();
 		if ($icon === '') {
@@ -416,11 +416,13 @@ class IconsForCp{
 			$element->setAttribute('width', $icon_width);
 		}
 
-		// Add width and class to paths
+		// Add fill and class to paths
 		foreach ($dom->getElementsByTagName('path') as $element) {
 			$class = 'ifcp-path-class '.$icon.' '.$element->getAttribute('class');
 			$element->setAttribute('class', $class);
-			$element->setAttribute('fill', $icon_color);
+			if ($icon_color !== null) {
+				$element->setAttribute('fill', $icon_color);
+			}
 		}
 
 		// Put styles outside SVG.
@@ -431,6 +433,13 @@ class IconsForCp{
 		}
 		if ($style !== '') {
 			$style = '<style>'.$style.'</style>';
+		}
+		
+		// Remove empty defs
+		foreach ($dom->getElementsByTagName('defs') as $element) {
+			if ($element->childNodes->length === 0) {
+				$element->parentNode->removeChild($element);
+			}
 		}
 
 		$icon_picked = $dom->saveXML();
@@ -445,7 +454,7 @@ class IconsForCp{
 		extract(shortcode_atts([
 			'icon'  => 'question-circle',
 			'size'  => '16',
-			'color' => '#00FF00',
+			'color' => null,
 			'class' => '',
 		], $atts));
 		if ($class !== '') {
