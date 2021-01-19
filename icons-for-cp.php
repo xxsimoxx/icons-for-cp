@@ -414,6 +414,7 @@ class IconsForCp{
 			$class = 'ifcp-svg-class '.$element->getAttribute('class');
 			$element->setAttribute('class', $class);
 			$element->setAttribute('width', $icon_width);
+			$element->removeAttribute('height');
 		}
 
 		// Add fill and class to paths
