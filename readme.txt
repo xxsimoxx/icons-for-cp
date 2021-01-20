@@ -31,7 +31,7 @@ Put the name of the icon as the title (use something like my-brand-icon) and the
 ```
 [ifcp-icon icon='paw' size='16' color='#FF0000' class='my-wonderful-class']
 ```
-Size, color and class are optional.
+Size (width, default 16), color and class are optional.
 
 It also adds a menu to TinyMCE to choose the icon and insert the shortcode for you.
 
