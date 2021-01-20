@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
 // Add auto updater https://codepotent.com/classicpress/plugins/update-manager/
 require_once('classes/UpdateClient.class.php');
 
-// Add aWPCLI support
+// Add WPCLI support
 require_once('classes/WPCLI.class.php');
 
 class IconsForCp{
@@ -75,6 +75,7 @@ class IconsForCp{
 		if (defined('WP_CLI') && WP_CLI) {
 			\WP_CLI::add_command('icons', '\XXSimoXX\IconsForCp\Icons');
 		}
+
 		// Uninstall.
 		register_uninstall_hook(__FILE__, [__CLASS__, 'uninstall']);
 
@@ -305,9 +306,9 @@ class IconsForCp{
 	public function custom_column_handle($column, $post_id) {
 		switch ($column) {
 			case 'preview' :
-				$post = get_post($post_id);
+				$this->fill_svg_array();
 				echo '<span>';
-				echo get_post_field('post_content', $post, 'raw');
+				echo $this->get_svg(get_the_title($post_id), 40, '#000');
 				echo '</span>';
 			break;
 		}
@@ -326,7 +327,6 @@ class IconsForCp{
 	}
 
 	public function add_icons($icons) {
-		// Filter for Canuck CP
 		$posts = $this->get_our_icons();
 		foreach ($posts as $post) {
 			$icon = $post->to_array();
@@ -336,7 +336,6 @@ class IconsForCp{
 	}
 
 	public function icon_select($icons) {
-		// Filter for Canuck CP
 		$posts = $this->get_our_icons();
 		foreach ($posts as $post) {
 			$icon = $post->to_array();
@@ -456,9 +455,9 @@ class IconsForCp{
 			'icon'  => 'question-circle',
 			'size'  => '16',
 			'color' => null,
-			'class' => '',
+			'class' => null,
 		], $atts));
-		if ($class !== '') {
+		if ($class !== null) {
 			$class = ' class="'.$class.'"';
 		}
 		return '<span'.$class.'>'.$this->get_svg($icon, $size, $color).'</span>';

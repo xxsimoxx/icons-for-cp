@@ -51,7 +51,7 @@ class Icons{
 
 		// Check if file exists
 		if (!file_exists($input_file)) {
-			return \WP_CLI::error('file "'.$input_file.'" not found.');
+			\WP_CLI::error('file "'.$input_file.'" not found.');
 		}
 
 		// Build the name from file name
@@ -67,17 +67,17 @@ class Icons{
 
 		// We have a name, check it.
 		if (!preg_match('/^[a-z0-9\-]+$/', $name)) {
-			return \WP_CLI::error('only lowercase letters, dashes and digits are allowed in the name.');
+			\WP_CLI::error('only lowercase letters, dashes and digits are allowed in the name.');
 		}
 		$page = get_page_by_title($name, OBJECT, 'icons-for-cp');
 		if ($page !== null && $overwrite === null) {
-			return \WP_CLI::error('icon "'.$name.'" already exists');
+			\WP_CLI::error('icon "'.$name.'" already exists');
 		}
 
 		// Create the post
 		$svg = file_get_contents($input_file);
 		if ($svg === false) {
-			return \WP_CLI::error('error reading "'.$input_file.'".');
+			\WP_CLI::error('error reading "'.$input_file.'".');
 		}
 		$id = (($page !== null) && ($overwrite === true)) ? $page->ID : 0;
 		$post = [
@@ -89,10 +89,10 @@ class Icons{
 		];
 		$status = wp_insert_post($post, true);
 		if (is_wp_error($status)) {
-			return \WP_CLI::error('WP error: "'.$status->get_error_message());
+			\WP_CLI::error('WP error: "'.$status->get_error_message());
 		}
 
-		return \WP_CLI::success('Icon '.$name.' added successfully with ID='.$status.'.');
+		\WP_CLI::success('Icon '.$name.' added successfully with ID='.$status.'.');
 
 	}
 
