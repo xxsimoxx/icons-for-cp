@@ -16,7 +16,7 @@ namespace XXSimoXX\IconsForCp;
 
 if (!defined('ABSPATH')) {
 	die('-1');
-};
+}
 
 // Add auto updater https://codepotent.com/classicpress/plugins/update-manager/
 require_once('classes/UpdateClient.class.php');
@@ -157,9 +157,11 @@ class IconsForCp{
 
 	public function remove_buttons () {
 		global $current_screen;
-		if ($current_screen->post_type === 'icons-for-cp') {
-			remove_action('media_buttons', 'media_buttons');
+		if ($current_screen->post_type !== 'icons-for-cp') {
+			return;
 		}
+		remove_action('media_buttons', 'media_buttons');
+
 	}
 
 	public function remove_autosave() {
@@ -228,7 +230,7 @@ class IconsForCp{
 				}
 				if (!isset($_REQUEST['remote_url'])) {
 					die('Missing post arguments.');
-				};
+				}
 				$response = $this->fetch_svg($_REQUEST['remote_url']);
 				break;
 
@@ -244,29 +246,26 @@ class IconsForCp{
 
 	private function check_title($title, $postid) {
 		if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
-			$response = [
+			return [
 				'message' => __('Caution: only lowercase letters, dashes and digits are allowed in the title.', 'icons-for-cp'),
 				'status'  => 'error',
 				'proceed' => false,
 			];
-			return $response;
 		}
 		$this->fill_svg_array();
 		if (isset($this->all_icons[$title]) && $title !== get_the_title($postid)) {
-			$response = [
+			return [
 				/* Translators: %s name of the icon */
 				'message' => sprintf(__('Caution: there is already an icon called %s.', 'icons-for-cp'), $title),
 				'status'  => 'notice notice-warning',
 				'proceed' => false,
 			];
-			return $response;
 		}
-		$response = [
+		return [
 			'message' => __('Title is good as icon name.', 'icons-for-cp'),
 			'status'  => 'updated',
 			'proceed' => true,
 		];
-		return $response;
 	}
 
 	private function fetch_svg ($remote_url) {
@@ -276,26 +275,23 @@ class IconsForCp{
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		$icon = curl_exec($ch);
 		if (curl_errno($ch)) {
-			$response = [
+			return [
 				'bad' => true,
 				'error' => curl_error($ch),
 			];
-			return $response;
 		}
 		$resultStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		if ($resultStatus !== 200) {
-			$response = [
+			return [
 				'bad' => true,
 				'error' => 'Request failed: HTTP status code: '.$resultStatus,
 			];
-			return $response;
 		}
-		$response = [
+		curl_close($ch);
+		return [
 			'bad' => false,
 			'icon' => $icon,
 		];
-		curl_close($ch);
-		return $response;
 	}
 
 	public function custom_columns($columns) {
@@ -420,9 +416,10 @@ class IconsForCp{
 		foreach ($dom->getElementsByTagName('path') as $element) {
 			$class = 'ifcp-path-class '.$icon.' '.$element->getAttribute('class');
 			$element->setAttribute('class', $class);
-			if ($icon_color !== null) {
-				$element->setAttribute('fill', $icon_color);
+			if ($icon_color === null) {
+				continue;
 			}
+			$element->setAttribute('fill', $icon_color);
 		}
 
 		// Put styles outside SVG.
@@ -437,9 +434,10 @@ class IconsForCp{
 
 		// Remove empty defs
 		foreach ($dom->getElementsByTagName('defs') as $element) {
-			if ($element->childNodes->length === 0) {
-				$element->parentNode->removeChild($element);
+			if ($element->childNodes->length !== 0) {
+				continue;
 			}
+			$element->parentNode->removeChild($element);
 		}
 
 		$icon_picked = $dom->saveXML();

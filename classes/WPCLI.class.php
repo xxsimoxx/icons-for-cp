@@ -4,7 +4,7 @@ namespace XXSimoXX\IconsForCp;
 
 if (!defined('ABSPATH')) {
 	die('-1');
-};
+}
 
 /**
 * Commands to work with Icons for CP.
