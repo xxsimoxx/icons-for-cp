@@ -161,7 +161,6 @@ class IconsForCp{
 			return;
 		}
 		remove_action('media_buttons', 'media_buttons');
-
 	}
 
 	public function remove_autosave() {
@@ -484,22 +483,32 @@ class IconsForCp{
 	}
 
 	public function generate_menu_items() {
+
 		if (!$this->can_do_mce()) {
 			return;
 		}
+
 		$this->fill_svg_array();
 		if (empty($this->all_icons)) {
 			return;
 		}
+
+		echo '<style>';
+		foreach ($this->all_icons as $icon => $content) {
+			echo '.mce-i-ifcp-'.$icon.':before{content: url("data:image/svg+xml;base64,'.base64_encode($this->get_svg($icon, 16, '#000')).'");}';
+		}
+		echo '</style>';
+
 		echo '<script type="text/javascript">';
 		/* Translators: MCE button name */
 		echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-cp').'";';
 		echo 'ifcp_mce_menu_content=[';
 		foreach ($this->all_icons as $icon => $content) {
-			echo '{text: "'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},';
+			echo '{text: "'.$icon.'", icon: "ifcp-'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},';
 		}
 		echo ']';
 		echo '</script>';
+
 	}
 
 	private function can_do_mce() {
