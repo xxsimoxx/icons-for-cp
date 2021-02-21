@@ -102,7 +102,7 @@ To help us know the number of active installations of this plugin, we collect an
 
 == Changelog ==
 = 1.1.0 =
-Added preview in TinyMCE menu.
-Code style review.
+* Added preview in TinyMCE menu.
+* Code style review.
 = 1.0.0 =
 * Initial release
