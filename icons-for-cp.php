@@ -3,7 +3,7 @@
  * Plugin Name: Icons for CP
  * Plugin URI: https://software.gieffeedizioni.it
  * Description: Manage and use SVG icons in your posts and pages.
- * Version: 1.1.0
+ * Version: 1.1.1
  * License: GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Author: Gieffe edizioni srl
@@ -528,6 +528,7 @@ class IconsForCp{
 		$allposts = get_posts([
 			'post_type'   => 'icons-for-cp',
 			'post_status' => 'any',
+			'numberposts' => -1,
 		]);
 		foreach ($allposts as $eachpost) {
 			wp_delete_post($eachpost->ID, true);
