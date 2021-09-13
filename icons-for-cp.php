@@ -460,6 +460,11 @@ class IconsForCp{
 		return '<span'.$class.'>'.$this->get_svg($icon, $size, $color).'</span>';
 	}
 
+	private function is_mce_5() {
+		global $tinymce_version;
+		return isset($tinymce_version) && substr($tinymce_version, 0, 1) === '5';
+	}
+
 	public function admin_head_menu() {
 		if (!$this->can_do_mce()) {
 			return;
@@ -512,6 +517,11 @@ class IconsForCp{
 	}
 
 	private function can_do_mce() {
+		// Remove editor for version 5 
+		// Todo: REMOVE
+		if ($this->is_mce_5()) {
+			return false;
+		}
 		if (!current_user_can('edit_posts') && !current_user_can('edit_pages')) {
 			return false;
 		}
