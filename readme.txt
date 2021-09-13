@@ -102,7 +102,7 @@ To help us know the number of active installations of this plugin, we collect an
 
 == Changelog ==
 = 1.1.1 =
-* Remove ALL dada on uninstall
+* Remove ALL data on uninstall
 
 = 1.1.0 =
 * Added preview in TinyMCE menu
