@@ -499,20 +499,19 @@ class IconsForCp{
 			return;
 		}
 
-		
-		$style ='<style>'."\n";
-		$icon5 ='ifcp_mce_menu_icons={'."\n";
+		$style = '<style>'."\n";
+		$icon5 = 'ifcp_mce_menu_icons={'."\n";
 		$menu4 = 'ifcp_mce_menu_content=['."\n";
 		$menu5 = 'ifcp_mce_menu_content=['."\n";
 		foreach ($this->all_icons as $icon => $content) {
 			// MCE4 style
-			$style.='.mce-i-ifcp-'.$icon.':before{content: url("data:image/svg+xml;base64,'.base64_encode($this->get_svg($icon, 16, '#000')).'");}'."\n";
+			$style .= '.mce-i-ifcp-'.$icon.':before{content: url("data:image/svg+xml;base64,'.base64_encode($this->get_svg($icon, 16, '#000')).'");}'."\n";
 			// MCE4 menu
-			$menu4.='{text: "'.$icon.'", icon: "ifcp-'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},'."\n";
+			$menu4 .= '{text: "'.$icon.'", icon: "ifcp-'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},'."\n";
 			// MCE5 icon pack
-			$icon5.='"mce-ifcp-'.$icon.'":"'.addslashes($this->get_svg($icon, 16, '#000')).'",'."\n"; 
+			$icon5 .= '"mce-ifcp-'.$icon.'":"'.addslashes($this->get_svg($icon, 16, '#000')).'",'."\n";
 			// MCE5 menu
-			$menu5.= '{type:"menuitem", icon: "mce-ifcp-'.$icon.'", text: "'.$icon.'", onAction: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},'."\n";
+			$menu5 .= '{type:"menuitem", icon: "mce-ifcp-'.$icon.'", text: "'.$icon.'", onAction: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},'."\n";
 		}
 		$style .= '</style>'."\n";
 		$menu4 .= ']'."\n";
