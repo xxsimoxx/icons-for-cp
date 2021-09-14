@@ -478,7 +478,8 @@ class IconsForCp{
 	}
 
 	public function add_mce_plugin($plugin_array) {
-		$plugin_array['ifcp_mce_menu'] = plugins_url('js/menu.js', __FILE__);
+		$js = $this->is_mce_5() ? 'js/menu-5.js' : 'js/menu.js';
+		$plugin_array['ifcp_mce_menu'] = plugins_url($js, __FILE__);
 		return $plugin_array;
 	}
 
@@ -498,30 +499,43 @@ class IconsForCp{
 			return;
 		}
 
-		echo '<style>';
+		
+		$style ='<style>'."\n";
+		$icon5 ='ifcp_mce_menu_icons={'."\n";
+		$menu4 = 'ifcp_mce_menu_content=['."\n";
+		$menu5 = 'ifcp_mce_menu_content=['."\n";
 		foreach ($this->all_icons as $icon => $content) {
-			echo '.mce-i-ifcp-'.$icon.':before{content: url("data:image/svg+xml;base64,'.base64_encode($this->get_svg($icon, 16, '#000')).'");}';
+			// MCE4 style
+			$style.='.mce-i-ifcp-'.$icon.':before{content: url("data:image/svg+xml;base64,'.base64_encode($this->get_svg($icon, 16, '#000')).'");}'."\n";
+			// MCE4 menu
+			$menu4.='{text: "'.$icon.'", icon: "ifcp-'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},'."\n";
+			// MCE5 icon pack
+			$icon5.='"mce-ifcp-'.$icon.'":"'.addslashes($this->get_svg($icon, 16, '#000')).'",'."\n"; 
+			// MCE5 menu
+			$menu5.= '{type:"menuitem", icon: "mce-ifcp-'.$icon.'", text: "'.$icon.'", onAction: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},'."\n";
 		}
-		echo '</style>';
+		$style .= '</style>'."\n";
+		$menu4 .= ']'."\n";
+		$icon5 .= '};'."\n";
+		$menu5 .= ']'."\n";
 
-		echo '<script type="text/javascript">';
-		/* Translators: MCE button name */
-		echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-cp').'";';
-		echo 'ifcp_mce_menu_content=[';
-		foreach ($this->all_icons as $icon => $content) {
-			echo '{text: "'.$icon.'", icon: "ifcp-'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},';
+		if ($this->is_mce_5()) {
+			echo '<script type="text/javascript">';
+			echo $menu5;
+			echo $icon5;
+			echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-cp').'";';
+			echo '</script>';
+		} else {
+			echo $style;
+			echo '<script type="text/javascript">';
+			echo $menu4;
+			echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-cp').'";';
+			echo '</script>';
 		}
-		echo ']';
-		echo '</script>';
 
 	}
 
 	private function can_do_mce() {
-		// Remove editor for version 5 
-		// Todo: REMOVE
-		if ($this->is_mce_5()) {
-			return false;
-		}
 		if (!current_user_can('edit_posts') && !current_user_can('edit_pages')) {
 			return false;
 		}
