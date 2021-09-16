@@ -1,5 +1,5 @@
 (function() {
-	tinymce.PluginManager.add('ifcp_mce_menu', function( editor, url ) {
+	tinymce.PluginManager.add('ifcp_mce_menu', function( editor ) {
 
 		for (var ifcp_icon in ifcp_mce_menu_icons) {
 			editor.ui.registry.addIcon(ifcp_icon, ifcp_mce_menu_icons[ifcp_icon]);
