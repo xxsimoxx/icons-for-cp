@@ -27,7 +27,7 @@ require_once('classes/WPCLI.class.php');
 class IconsForCp{
 
 	private $all_icons = [];
-	private $our_icons = [];
+	private $our_icons;
 
 	public function __construct() {
 
