@@ -103,6 +103,7 @@ To help us know the number of active installations of this plugin, we collect an
 == Changelog ==
 = 1.2.0 =
 * Added TinyMCE v.5 compatibility
+* Updated UpdateClient
 
 = 1.1.1 =
 * Remove ALL data on uninstall
