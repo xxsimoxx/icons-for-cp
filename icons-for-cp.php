@@ -26,8 +26,8 @@ require_once('classes/WPCLI.class.php');
 
 class IconsForCp{
 
-	private $all_icons;
-	private $our_icons;
+	private $all_icons = [];
+	private $our_icons = [];
 
 	public function __construct() {
 
@@ -141,7 +141,7 @@ class IconsForCp{
 		echo '</div>';
 	}
 
-	public function import_callback($post) {
+	public function import_callback() {
 		echo '<input size=100 type="text" id="ifcp-import-url" value="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs/regular/thumbs-up.svg"> ';
 		echo '<input type="button" name="import" class="button button-large" id="ifcp-import-do" value="'.__('Import').'">';
 		echo '<span class="spinner" id="ifcp-import-spinner"></span>';
@@ -196,6 +196,7 @@ class IconsForCp{
 			'nonce'  => wp_create_nonce('ifcp-ajax-nonce'),
 			'postid' => $post->ID,
 		]);
+		$cm_settings = [];
 		$cm_settings['codeEditor'] = wp_enqueue_code_editor(['type' => 'image/svg+xml']);
 		wp_enqueue_script('wp-theme-plugin-editor');
 		wp_localize_script('jquery', 'cm_settings', $cm_settings);
@@ -340,7 +341,7 @@ class IconsForCp{
 	}
 
 	private function fill_svg_array() {
-		if (!empty($this->all_icons)) {
+		if ($this->all_icons !== []) {
 			return;
 		}
 		if (function_exists('canuckcp_icon_array')) {
@@ -447,7 +448,7 @@ class IconsForCp{
 
 	}
 
-	public function process_shortcode($atts, $content = null) {
+	public function process_shortcode($atts) {
 		extract(shortcode_atts([
 			'icon'  => 'question-circle',
 			'size'  => '16',
@@ -470,7 +471,7 @@ class IconsForCp{
 			return;
 		}
 		$this->fill_svg_array();
-		if (empty($this->all_icons)) {
+		if ($this->all_icons === []) {
 			return;
 		}
 		add_filter('mce_external_plugins', [$this, 'add_mce_plugin']);
@@ -495,7 +496,7 @@ class IconsForCp{
 		}
 
 		$this->fill_svg_array();
-		if (empty($this->all_icons)) {
+		if ($this->all_icons === []) {
 			return;
 		}
 
@@ -503,7 +504,7 @@ class IconsForCp{
 		$icon5 = 'ifcp_mce_menu_icons={'."\n";
 		$menu4 = 'ifcp_mce_menu_content=['."\n";
 		$menu5 = 'ifcp_mce_menu_content=['."\n";
-		foreach ($this->all_icons as $icon => $content) {
+		foreach (array_keys($this->all_icons) as $icon) {
 			// MCE4 style
 			$style .= '.mce-i-ifcp-'.$icon.':before{content: url("data:image/svg+xml;base64,'.base64_encode($this->get_svg($icon, 16, '#000')).'");}'."\n";
 			// MCE4 menu
