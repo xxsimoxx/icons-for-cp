@@ -9,7 +9,7 @@
 
 This plugin allows to use SVG icons in post and pages.
 
-## Add new icons 
+## Add new icons
 Just use the "Icons" menu in "Appearance" menu.
 Add your own icons or any from FontAwesome to the theme.
 
@@ -25,7 +25,7 @@ To keep them add `define('KEEP_ICONS_FOR_CP', true);` to `wp-config.php`.*
 ```
 Size (width, default 16px), color and class are optional.
 
-It also adds a menu to TinyMCE to choose the icon and insert the shortcode for you.
+It also adds a menu to TinyMCE (v. 4 and v.5) to choose the icon and insert the shortcode for you.
 
 ## Canuck CP
 This plugin integrates with [Canuck CP](https://kevinsspace.ca/canuck-cp-classicpress-theme/).
@@ -36,7 +36,7 @@ It is supported.
 Use `wp help icons` or `wp help icons add` to see usage instructions.
 You can bulk import a folder with a simple script like
 ```sh
-for icon in *.svg; do 
+for icon in *.svg; do
 	wp icons add "$icon";
 done
 ```

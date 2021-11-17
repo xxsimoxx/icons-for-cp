@@ -3,7 +3,7 @@
  * Plugin Name: Icons for CP
  * Plugin URI: https://software.gieffeedizioni.it
  * Description: Manage and use SVG icons in your posts and pages.
- * Version: 1.1.1
+ * Version: 1.2.0
  * License: GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Author: Gieffe edizioni srl
@@ -26,7 +26,7 @@ require_once('classes/WPCLI.class.php');
 
 class IconsForCp{
 
-	private $all_icons;
+	private $all_icons = [];
 	private $our_icons;
 
 	public function __construct() {
@@ -141,7 +141,7 @@ class IconsForCp{
 		echo '</div>';
 	}
 
-	public function import_callback($post) {
+	public function import_callback() {
 		echo '<input size=100 type="text" id="ifcp-import-url" value="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs/regular/thumbs-up.svg"> ';
 		echo '<input type="button" name="import" class="button button-large" id="ifcp-import-do" value="'.__('Import').'">';
 		echo '<span class="spinner" id="ifcp-import-spinner"></span>';
@@ -196,6 +196,7 @@ class IconsForCp{
 			'nonce'  => wp_create_nonce('ifcp-ajax-nonce'),
 			'postid' => $post->ID,
 		]);
+		$cm_settings = [];
 		$cm_settings['codeEditor'] = wp_enqueue_code_editor(['type' => 'image/svg+xml']);
 		wp_enqueue_script('wp-theme-plugin-editor');
 		wp_localize_script('jquery', 'cm_settings', $cm_settings);
@@ -340,7 +341,7 @@ class IconsForCp{
 	}
 
 	private function fill_svg_array() {
-		if (!empty($this->all_icons)) {
+		if ($this->all_icons !== []) {
 			return;
 		}
 		if (function_exists('canuckcp_icon_array')) {
@@ -447,7 +448,7 @@ class IconsForCp{
 
 	}
 
-	public function process_shortcode($atts, $content = null) {
+	public function process_shortcode($atts) {
 		extract(shortcode_atts([
 			'icon'  => 'question-circle',
 			'size'  => '16',
@@ -460,12 +461,17 @@ class IconsForCp{
 		return '<span'.$class.'>'.$this->get_svg($icon, $size, $color).'</span>';
 	}
 
+	private function is_mce_5() {
+		global $tinymce_version;
+		return isset($tinymce_version) && substr($tinymce_version, 0, 1) === '5';
+	}
+
 	public function admin_head_menu() {
 		if (!$this->can_do_mce()) {
 			return;
 		}
 		$this->fill_svg_array();
-		if (empty($this->all_icons)) {
+		if ($this->all_icons === []) {
 			return;
 		}
 		add_filter('mce_external_plugins', [$this, 'add_mce_plugin']);
@@ -473,7 +479,8 @@ class IconsForCp{
 	}
 
 	public function add_mce_plugin($plugin_array) {
-		$plugin_array['ifcp_mce_menu'] = plugins_url('js/menu.js', __FILE__);
+		$js = $this->is_mce_5() ? 'js/menu-5.js' : 'js/menu.js';
+		$plugin_array['ifcp_mce_menu'] = plugins_url($js, __FILE__);
 		return $plugin_array;
 	}
 
@@ -489,25 +496,42 @@ class IconsForCp{
 		}
 
 		$this->fill_svg_array();
-		if (empty($this->all_icons)) {
+		if ($this->all_icons === []) {
 			return;
 		}
 
-		echo '<style>';
-		foreach ($this->all_icons as $icon => $content) {
-			echo '.mce-i-ifcp-'.$icon.':before{content: url("data:image/svg+xml;base64,'.base64_encode($this->get_svg($icon, 16, '#000')).'");}';
+		$style = '<style>'."\n";
+		$icon5 = 'ifcp_mce_menu_icons={'."\n";
+		$menu4 = 'ifcp_mce_menu_content=['."\n";
+		$menu5 = 'ifcp_mce_menu_content=['."\n";
+		foreach (array_keys($this->all_icons) as $icon) {
+			// MCE4 style
+			$style .= '.mce-i-ifcp-'.$icon.':before{content: url("data:image/svg+xml;base64,'.base64_encode($this->get_svg($icon, 16, '#000')).'");}'."\n";
+			// MCE4 menu
+			$menu4 .= '{text: "'.$icon.'", icon: "ifcp-'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},'."\n";
+			// MCE5 icon pack
+			$icon5 .= '"mce-ifcp-'.$icon.'":"'.addslashes($this->get_svg($icon, 16, '#000')).'",'."\n";
+			// MCE5 menu
+			$menu5 .= '{type:"menuitem", icon: "mce-ifcp-'.$icon.'", text: "'.$icon.'", onAction: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},'."\n";
 		}
-		echo '</style>';
+		$style .= '</style>'."\n";
+		$menu4 .= ']'."\n";
+		$icon5 .= '};'."\n";
+		$menu5 .= ']'."\n";
 
-		echo '<script type="text/javascript">';
-		/* Translators: MCE button name */
-		echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-cp').'";';
-		echo 'ifcp_mce_menu_content=[';
-		foreach ($this->all_icons as $icon => $content) {
-			echo '{text: "'.$icon.'", icon: "ifcp-'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},';
+		if ($this->is_mce_5()) {
+			echo '<script type="text/javascript">';
+			echo $menu5;
+			echo $icon5;
+			echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-cp').'";';
+			echo '</script>';
+		} else {
+			echo $style;
+			echo '<script type="text/javascript">';
+			echo $menu4;
+			echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-cp').'";';
+			echo '</script>';
 		}
-		echo ']';
-		echo '</script>';
 
 	}
 
