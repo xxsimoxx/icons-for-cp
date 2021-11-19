@@ -128,22 +128,23 @@ class IconsForCp{
 	}
 
 	public function add_meta_boxes() {
-		add_meta_box('ifcp-pw', __('Preview'), [$this, 'preview_callback'], null, 'side');
+		add_meta_box('ifcp-pw', __('Preview', 'icons-for-cp'), [$this, 'preview_callback'], null, 'side');
 		if (!function_exists('curl_version')) {
 			return;
 		}
-		add_meta_box('ifcp-import', __('Import'), [$this, 'import_callback']);
+		add_meta_box('ifcp-import', __('Import', 'icons-for-cp'), [$this, 'import_callback']);
 	}
 
 	public function preview_callback($post) {
 		echo '<div id="ifcp-pw-inner">';
-		echo get_post_field('post_content', $post, 'raw');
+		// Can't really sanitize SVG.
+		echo get_post_field('post_content', $post, 'raw'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '</div>';
 	}
 
 	public function import_callback() {
 		echo '<input size=100 type="text" id="ifcp-import-url" value="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs/regular/thumbs-up.svg"> ';
-		echo '<input type="button" name="import" class="button button-large" id="ifcp-import-do" value="'.__('Import').'">';
+		echo '<input type="button" name="import" class="button button-large" id="ifcp-import-do" value="'.esc_html__('Import', 'icons-for-cp').'">';
 		echo '<span class="spinner" id="ifcp-import-spinner"></span>';
 	}
 
@@ -208,7 +209,7 @@ class IconsForCp{
 		if (!isset($_REQUEST['nonce'])) {
 			die('Missing nonce.');
 		}
-		if (!wp_verify_nonce($_REQUEST['nonce'], 'ifcp-ajax-nonce')) {
+		if (!wp_verify_nonce(sanitize_key(wp_unslash($_REQUEST['nonce'])), 'ifcp-ajax-nonce')) {
 			die('Nonce error.');
 		}
 		if (!isset($_REQUEST['req'])) {
@@ -221,7 +222,10 @@ class IconsForCp{
 				if (!(isset($_REQUEST['post_title']) && isset($_REQUEST['postid']))) {
 					die('Missing post arguments.');
 				}
-				$response = $this->check_title($_REQUEST['post_title'], $_REQUEST['postid']);
+				// Can't sanitize $_REQUEST['post_title'] as check_title is there
+				// to bail if the title have non permitted chars
+				// @see: private function check_title($title, $postid)
+				$response = $this->check_title(wp_unslash($_REQUEST['post_title']), intval(wp_unslash($_REQUEST['postid']))); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				break;
 
 			case 'import':
@@ -231,7 +235,7 @@ class IconsForCp{
 				if (!isset($_REQUEST['remote_url'])) {
 					die('Missing post arguments.');
 				}
-				$response = $this->fetch_svg($_REQUEST['remote_url']);
+				$response = $this->fetch_svg(esc_url_raw(wp_unslash($_REQUEST['remote_url'])));
 				break;
 
 			default:
@@ -247,7 +251,7 @@ class IconsForCp{
 	private function check_title($title, $postid) {
 		if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
 			return [
-				'message' => __('Caution: only lowercase letters, dashes and digits are allowed in the title.', 'icons-for-cp'),
+				'message' => __('Caution: only lowercase letters, dashes and digits are allowed in the title.', 'icons-for-cp').$postid,
 				'status'  => 'error',
 				'proceed' => false,
 			];
@@ -269,33 +273,27 @@ class IconsForCp{
 	}
 
 	private function fetch_svg ($remote_url) {
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $remote_url);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$icon = curl_exec($ch);
-		if (curl_errno($ch)) {
+		$response = wp_remote_get($remote_url);
+		if (is_wp_error($response)) {
 			return [
-				'bad' => true,
-				'error' => curl_error($ch),
+				'bad'   => true,
+				'error' => 'WP Error: '.implode(', '.$response->errors),
 			];
 		}
-		$resultStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		if ($resultStatus !== 200) {
+		if (isset($response['response']['code']) && isset($response['response']['message']) && $response['response']['code'] !== 200) {
 			return [
-				'bad' => true,
-				'error' => 'Request failed: HTTP status code: '.$resultStatus,
+				'bad'   => true,
+				'error' => 'Request failed: HTTP status code '.$response['response']['code'].': '.$response['response']['message'],
 			];
 		}
-		curl_close($ch);
 		return [
-			'bad' => false,
-			'icon' => $icon,
+			'bad'  => false,
+			'icon' => $response['body'],
 		];
 	}
 
 	public function custom_columns($columns) {
-		$columns['preview'] = __('Preview').'<style>.column-preview { min-width: 40px; text-align: right !important; }</style>';
+		$columns['preview'] = esc_html__('Preview', 'icons-for-cp').'<style>.column-preview { min-width: 40px; text-align: right !important; }</style>';
 		return $columns;
 	}
 
@@ -304,7 +302,8 @@ class IconsForCp{
 			case 'preview' :
 				$this->fill_svg_array();
 				echo '<span>';
-				echo $this->get_svg(get_the_title($post_id), 40, '#000');
+				// Can't escape SVG.
+				echo $this->get_svg(get_the_title($post_id), 40, '#000'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo '</span>';
 			break;
 		}
@@ -354,7 +353,7 @@ class IconsForCp{
 	}
 
 	public function settings_link($links) {
-		$link = '<a href="'.admin_url('edit.php?post_type=icons-for-cp').'" title="'.__('Settings').'"><i class="dashicon dashicons-edit"></i></a>';
+		$link = '<a href="'.admin_url('edit.php?post_type=icons-for-cp').'" title="'.__('Settings', 'icons-for-cp').'"><i class="dashicon dashicons-edit"></i></a>';
 		array_unshift($links, $link);
 		return $links;
 	}
@@ -449,16 +448,16 @@ class IconsForCp{
 	}
 
 	public function process_shortcode($atts) {
-		extract(shortcode_atts([
+		$p = shortcode_atts([
 			'icon'  => 'question-circle',
 			'size'  => '16',
 			'color' => null,
 			'class' => null,
-		], $atts));
-		if ($class !== null) {
-			$class = ' class="'.$class.'"';
+		], $atts);
+		if ($p['class'] !== null) {
+			$p['class'] = ' class="'.$p['class'].'"';
 		}
-		return '<span'.$class.'>'.$this->get_svg($icon, $size, $color).'</span>';
+		return '<span'.$p['class'].'>'.$this->get_svg($p['icon'], $p['size'], $p['color']).'</span>';
 	}
 
 	private function is_mce_5() {
@@ -506,7 +505,8 @@ class IconsForCp{
 		$menu5 = 'ifcp_mce_menu_content=['."\n";
 		foreach (array_keys($this->all_icons) as $icon) {
 			// MCE4 style
-			$style .= '.mce-i-ifcp-'.$icon.':before{content: url("data:image/svg+xml;base64,'.base64_encode($this->get_svg($icon, 16, '#000')).'");}'."\n";
+			// To render icon preview in menu a style with Base64 encoded icon is used. There is no code obfuscation.
+			$style .= '.mce-i-ifcp-'.$icon.':before{content: url("data:image/svg+xml;base64,'.base64_encode($this->get_svg($icon, 16, '#000')).'");}'."\n"; //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 			// MCE4 menu
 			$menu4 .= '{text: "'.$icon.'", icon: "ifcp-'.$icon.'", onclick: function() {tinymce.activeEditor.insertContent("[ifcp-icon icon=\''.$icon.'\' size=\'16\' color=\'#000000\']"); }},'."\n";
 			// MCE5 icon pack
@@ -521,15 +521,15 @@ class IconsForCp{
 
 		if ($this->is_mce_5()) {
 			echo '<script type="text/javascript">';
-			echo $menu5;
-			echo $icon5;
-			echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-cp').'";';
+			echo $menu5; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $icon5; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo 'ifcp_mce_menu_name="'.esc_html__('Icons', 'icons-for-cp').'";';
 			echo '</script>';
 		} else {
-			echo $style;
+			echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '<script type="text/javascript">';
-			echo $menu4;
-			echo 'ifcp_mce_menu_name="'.__('Icons', 'icons-for-cp').'";';
+			echo $menu4; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo 'ifcp_mce_menu_name="'.esc_html__('Icons', 'icons-for-cp').'";';
 			echo '</script>';
 		}
 
