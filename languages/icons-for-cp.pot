@@ -1,22 +1,22 @@
 # Copyright (C) 2021 Gieffe edizioni srl
-# This file is distributed under the same license as the Icons for CP plugin.
+# This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: Icons for CP 0.2.1\n"
+"Project-Id-Version: Icons for CP 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/icons-for-cp\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-01-14T07:47:42+00:00\n"
+"POT-Creation-Date: 2021-11-19T12:51:06+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.4.0\n"
+"X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: icons-for-cp\n"
 
 #. Plugin Name of the plugin
 #. Translators: Help menu title
-#: icons-for-cp.php:368
+#: icons-for-cp.php:369
 msgid "Icons for CP"
 msgstr ""
 
@@ -36,78 +36,92 @@ msgstr ""
 msgid "https://www.gieffeedizioni.it"
 msgstr ""
 
-#. Translators: MCE button name
-#: icons-for-cp.php:95
-#: icons-for-cp.php:101
-#: icons-for-cp.php:106
-#: icons-for-cp.php:453
+#: icons-for-cp.php:103
+#: icons-for-cp.php:109
+#: icons-for-cp.php:114
+#: icons-for-cp.php:526
+#: icons-for-cp.php:532
 msgid "Icons"
 msgstr ""
 
-#: icons-for-cp.php:96
+#: icons-for-cp.php:104
 msgid "Icon"
 msgstr ""
 
-#: icons-for-cp.php:97
-#: icons-for-cp.php:100
+#: icons-for-cp.php:105
+#: icons-for-cp.php:108
 msgid "New icon"
 msgstr ""
 
-#: icons-for-cp.php:98
+#: icons-for-cp.php:106
 msgid "Add new icon"
 msgstr ""
 
-#: icons-for-cp.php:99
+#: icons-for-cp.php:107
 msgid "Edit icon"
 msgstr ""
 
-#: icons-for-cp.php:102
+#: icons-for-cp.php:110
 msgid "View icon"
 msgstr ""
 
-#: icons-for-cp.php:103
+#: icons-for-cp.php:111
 msgid "Search icons"
 msgstr ""
 
-#: icons-for-cp.php:104
+#: icons-for-cp.php:112
 msgid "No icons found"
 msgstr ""
 
-#: icons-for-cp.php:105
+#: icons-for-cp.php:113
 msgid "No icons found in trash"
 msgstr ""
 
+#: icons-for-cp.php:131
+#: icons-for-cp.php:296
+msgid "Preview"
+msgstr ""
+
+#: icons-for-cp.php:135
+#: icons-for-cp.php:147
+msgid "Import"
+msgstr ""
+
 #. translators: placeholder for title
-#: icons-for-cp.php:167
+#: icons-for-cp.php:177
 msgid "icon-name"
 msgstr ""
 
-#: icons-for-cp.php:240
+#: icons-for-cp.php:254
 msgid "Caution: only lowercase letters, dashes and digits are allowed in the title."
 msgstr ""
 
 #. Translators: %s name of the icon
-#: icons-for-cp.php:250
+#: icons-for-cp.php:263
 msgid "Caution: there is already an icon called %s."
 msgstr ""
 
-#: icons-for-cp.php:257
+#: icons-for-cp.php:269
 msgid "Title is good as icon name."
 msgstr ""
 
-#: icons-for-cp.php:370
-msgid "Place the icon name in the title (use only lowercase letters, dashes and digits, something like \"my-logo-3\")."
+#: icons-for-cp.php:356
+msgid "Settings"
 msgstr ""
 
 #: icons-for-cp.php:371
+msgid "Place the icon name in the title (use only lowercase letters, dashes and digits, something like \"my-logo-3\")."
+msgstr ""
+
+#: icons-for-cp.php:372
 msgid "Place the SVG code as post content (you will see your image in the Preview meta box)."
 msgstr ""
 
-#: icons-for-cp.php:373
+#: icons-for-cp.php:374
 msgid "If you insert an URL in the Import meta box this will be fetched as post content."
 msgstr ""
 
 #. Translators: this string is followed by an example shortcode
-#: icons-for-cp.php:376
+#: icons-for-cp.php:377
 msgid "You can use your icons in posts and pages using a shortcode like this:"
 msgstr ""

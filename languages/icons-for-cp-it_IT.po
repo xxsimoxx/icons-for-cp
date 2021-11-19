@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Icons for CP 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/icons-for-cp\n"
-"POT-Creation-Date: 2021-01-14T07:47:42+00:00\n"
+"POT-Creation-Date: 2021-11-19T12:51:06+00:00\n"
 "PO-Revision-Date: 2021-01-06 14:20+0100\n"
 "Last-Translator: root <root@giecloud1.gieffeedizioni.it>\n"
 "Language-Team: Italian\n"
@@ -16,11 +16,11 @@ msgstr ""
 "X-Domain: icons-for-cp\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: icons-for-cp.php:98
+#: icons-for-cp.php:106
 msgid "Add new icon"
 msgstr "Aggiungi nuova icona"
 
-#: icons-for-cp.php:240
+#: icons-for-cp.php:254
 msgid ""
 "Caution: only lowercase letters, dashes and digits are allowed in the title."
 msgstr ""
@@ -28,11 +28,11 @@ msgstr ""
 "cifre."
 
 #. Translators: %s name of the icon
-#: icons-for-cp.php:250
+#: icons-for-cp.php:263
 msgid "Caution: there is already an icon called %s."
 msgstr "Attenzione: l'icona %s esiste gi&agrave;."
 
-#: icons-for-cp.php:99
+#: icons-for-cp.php:107
 msgid "Edit icon"
 msgstr "Modifica icona"
 
@@ -40,73 +40,91 @@ msgstr "Modifica icona"
 msgid "Gieffe edizioni srl"
 msgstr ""
 
-#: icons-for-cp.php:96
+#: icons-for-cp.php:104
 msgid "Icon"
 msgstr "Icona"
 
-#. Translators: MCE button name
-#: icons-for-cp.php:95 icons-for-cp.php:101 icons-for-cp.php:106
-#: icons-for-cp.php:453
+#: icons-for-cp.php:103 icons-for-cp.php:109 icons-for-cp.php:114
+#: icons-for-cp.php:526 icons-for-cp.php:532
 msgid "Icons"
 msgstr "Icone"
 
 #. Plugin Name of the plugin
 #. Translators: Help menu title
-#: icons-for-cp.php:368
+#: icons-for-cp.php:369
 msgid "Icons for CP"
 msgstr ""
 
-#: icons-for-cp.php:373
+#: icons-for-cp.php:374
 msgid ""
 "If you insert an URL in the Import meta box this will be fetched as post "
 "content."
-msgstr "Se inserisci un URL nel meta box Importa questo verrà scaricato ed inserito nel contenuto."
+msgstr ""
+"Se inserisci un URL nel meta box Importa questo verrà scaricato ed inserito "
+"nel contenuto."
+
+#: icons-for-cp.php:135 icons-for-cp.php:147
+msgid "Import"
+msgstr "Importa"
 
 #. Description of the plugin
 msgid "Manage and use SVG icons in your posts and pages."
 msgstr "Gestisci e usa icone SVG nei tuoi articoli e pagine."
 
-#: icons-for-cp.php:97 icons-for-cp.php:100
+#: icons-for-cp.php:105 icons-for-cp.php:108
 msgid "New icon"
 msgstr "Nuova icona"
 
-#: icons-for-cp.php:104
+#: icons-for-cp.php:112
 msgid "No icons found"
 msgstr "Nessuna icona trovata"
 
-#: icons-for-cp.php:105
+#: icons-for-cp.php:113
 msgid "No icons found in trash"
 msgstr "Nessuna icona trovata nel cestino"
 
-#: icons-for-cp.php:371
+#: icons-for-cp.php:372
 msgid ""
 "Place the SVG code as post content (you will see your image in the Preview "
 "meta box)."
-msgstr "Inserisci il codice SVG come contenuto (vedrai la tua immagine nel meta box dell'Anteprima)."
+msgstr ""
+"Inserisci il codice SVG come contenuto (vedrai la tua immagine nel meta box "
+"dell'Anteprima)."
 
-#: icons-for-cp.php:370
+#: icons-for-cp.php:371
 msgid ""
 "Place the icon name in the title (use only lowercase letters, dashes and "
 "digits, something like \"my-logo-3\")."
 msgstr ""
-"Metti il nome dell'icona nel titolo (usa solo lettere minuscole, trattini e cifre, ad esempio \"mio-logo-3\")"
+"Metti il nome dell'icona nel titolo (usa solo lettere minuscole, trattini e "
+"cifre, ad esempio \"mio-logo-3\")"
 
-#: icons-for-cp.php:103
+#: icons-for-cp.php:131 icons-for-cp.php:296
+msgid "Preview"
+msgstr "Anteprima"
+
+#: icons-for-cp.php:111
 msgid "Search icons"
 msgstr "Cerca icone"
 
-#: icons-for-cp.php:257
+#: icons-for-cp.php:356
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: icons-for-cp.php:269
 msgid "Title is good as icon name."
 msgstr "Titolo corretto come nome per l'icona."
 
-#: icons-for-cp.php:102
+#: icons-for-cp.php:110
 msgid "View icon"
 msgstr "Guarda Icona"
 
 #. Translators: this string is followed by an example shortcode
-#: icons-for-cp.php:376
+#: icons-for-cp.php:377
 msgid "You can use your icons in posts and pages using a shortcode like this:"
-msgstr "Puoi usare le tue icone negli articoli e nelle pagine usando uno shortcode come questo:"
+msgstr ""
+"Puoi usare le tue icone negli articoli e nelle pagine usando uno shortcode "
+"come questo:"
 
 #. Plugin URI of the plugin
 msgid "https://software.gieffeedizioni.it"
@@ -117,6 +135,6 @@ msgid "https://www.gieffeedizioni.it"
 msgstr ""
 
 #. translators: placeholder for title
-#: icons-for-cp.php:167
+#: icons-for-cp.php:177
 msgid "icon-name"
 msgstr "nome-icona"
