@@ -27,8 +27,8 @@ Size (width, default 16px), color and class are optional.
 
 It also adds a menu to TinyMCE (v. 4 and v.5) to choose the icon and insert the shortcode for you.
 
-## Canuck CP
-This plugin integrates with [Canuck CP](https://kevinsspace.ca/canuck-cp-classicpress-theme/).
+### Integrations
+This plugin integrates with Canuck CP theme, that is no more available.
 Your icons are added to those present in the theme, and those present in the theme are available.
 
 ## WP CLI
