@@ -355,7 +355,7 @@ class IconsForCp{
 	}
 
 	public function settings_link($links) {
-		$link = '<a href="'.admin_url('edit.php?post_type=icons-for-cp').'" title="'.__('Settings', 'icons-for-cp').'"><i class="dashicon dashicons-edit"></i></a>';
+		$link = '<a href="'.admin_url('edit.php?post_type=icons-for-cp').'" title="'.__('Settings', 'icons-for-cp').'"><i class="dashicons-before dashicons-edit"></i></a>';
 		array_unshift($links, $link);
 		return $links;
 	}
