@@ -20,7 +20,6 @@ jQuery( document ).ready(
 				}
 			).done(
 				function (data) {
-
 					jQuery( '#message' ).remove();
 					jQuery( '#poststuff' ).prepend( '<div id="message" class="fade ' + data.status + '"><p>' + data.message + '</p></div>' );
 
@@ -69,7 +68,8 @@ jQuery( document ).ready(
 
 		}
 
-		jQuery( '#title' ).change(
+		jQuery( '#title' ).on(
+			'change',
 			function() {
 				var title = $( '#title' ).val();
 				if (title != '') {
@@ -78,7 +78,8 @@ jQuery( document ).ready(
 			}
 		);
 
-		jQuery( '#ifcp-import-do' ).click(
+		jQuery( '#ifcp-import-do' ).on(
+			'click',
 			function() {
 				var url = $( '#ifcp-import-url' ).val();
 				jQuery( "#ifcp-import-spinner" ).addClass( "is-active" );

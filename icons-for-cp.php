@@ -182,7 +182,7 @@ class IconsForCp{
 	}
 
 	public function edit_post_scripts($hook) {
-		if (!in_array($hook, ['edit.php', 'post.php', 'post-new.php'])) {
+		if (!in_array($hook, ['post.php', 'post-new.php'])) {
 			return;
 		}
 		global $post;
@@ -199,6 +199,7 @@ class IconsForCp{
 			'nonce'  => wp_create_nonce('ifcp-ajax-nonce'),
 			'postid' => $post->ID,
 		]);
+
 		$cm_settings = [];
 		$cm_settings['codeEditor'] = wp_enqueue_code_editor(['type' => 'image/svg+xml']);
 		wp_enqueue_script('wp-theme-plugin-editor');
