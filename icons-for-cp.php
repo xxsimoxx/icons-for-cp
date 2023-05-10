@@ -3,7 +3,7 @@
  * Plugin Name: Icons for CP
  * Plugin URI: https://software.gieffeedizioni.it
  * Description: Manage and use SVG icons in your posts and pages.
- * Version: 1.3.4
+ * Version: 1.3.5
  * Requires CP: 1.1
  * Requires PHP: 5.6
  * License: GPL2
@@ -254,7 +254,7 @@ class IconsForCp{
 	private function check_title($title, $postid) {
 		if (!preg_match('/^[a-z0-9\-]+$/', $title)) {
 			return [
-				'message' => __('Caution: only lowercase letters, dashes and digits are allowed in the title.', 'icons-for-cp').$postid,
+				'message' => __('Caution: only lowercase letters, dashes and digits are allowed in the title.', 'icons-for-cp'),
 				'status'  => 'error',
 				'proceed' => false,
 			];
