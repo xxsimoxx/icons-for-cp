@@ -2,4 +2,4 @@
 devtools export-ignore
 readme.txt export-ignore
 .github export-ignore
-.gitignore
+.gitignore export-ignore
