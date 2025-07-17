@@ -3,7 +3,7 @@
  * Plugin Name: Icons for CP
  * Plugin URI: https://software.gieffeedizioni.it
  * Description: Manage and use SVG icons in your posts and pages.
- * Version: 1.3.5
+ * Version: 1.3.6
  * Requires CP: 1.1
  * Requires PHP: 5.6
  * License: GPL2
