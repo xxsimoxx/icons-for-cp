@@ -11,8 +11,8 @@ jobs:
       name: CPCS
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v4
         - name: CPCS get rules
+          uses: actions/checkout@v4
           run: |
             wget -O phpcs.xml https://raw.githubusercontent.com/ClassicPress/ClassicPress-Coding-Standards/main/phpcs.xml
             sed -i '/^\t<!-- start config -->.*/a\
