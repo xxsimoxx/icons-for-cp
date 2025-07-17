@@ -507,6 +507,9 @@ class IconsForCp{
 		$menu4 = 'ifcp_mce_menu_content=['."\n";
 		$menu5 = 'ifcp_mce_menu_content=['."\n";
 		foreach (array_keys($this->all_icons) as $icon) {
+			if ($icon === '') {
+				continue;
+			}
 			// MCE4 style
 			// To render icon preview in menu a style with Base64 encoded icon is used. There is no code obfuscation.
 			$style .= '.mce-i-ifcp-'.$icon.':before{content: url("data:image/svg+xml;base64,'.base64_encode($this->get_svg($icon, 16, '#000')).'");}'."\n"; //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
